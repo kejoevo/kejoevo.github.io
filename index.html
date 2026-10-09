@@ -675,7 +675,21 @@
       // Agtron Whole / Ground Color Values Parsing
       const beanAgtron = data.agtronbean ?? data.whole_color ?? data.color_whole ?? data.computed?.color_whole ?? '--';
       const groundAgtron = data.agtronground ?? data.ground_color ?? data.color_ground ?? data.computed?.color_ground ?? '--';
-      const agtronVal = (beanAgtron !== '--' || groundAgtron !== '--') ? `${beanAgtron} / ${groundAgtron}` : '未紀錄';
+
+      let scaLevel = '';
+      if (groundAgtron !== '--' && !isNaN(parseFloat(groundAgtron))) {
+        const num = parseFloat(groundAgtron);
+        if (num > 85) scaLevel = '極淺焙';
+        else if (num >= 75) scaLevel = '淺焙';
+        else if (num >= 65) scaLevel = '中淺焙';
+        else if (num >= 55) scaLevel = '中焙';
+        else if (num >= 45) scaLevel = '中深焙';
+        else if (num >= 35) scaLevel = '深焙';
+        else scaLevel = '極深焙';
+      }
+
+      const scaSuffix = scaLevel ? ` (${scaLevel})` : '';
+      const agtronVal = (beanAgtron !== '--' || groundAgtron !== '--') ? `${beanAgtron} / ${groundAgtron}${scaSuffix}` : '未紀錄';
 
       const items = [
         { label: '烘焙日期 / 機型', val: `${data.roastisodate || 'N/A'} (${roasterName})`, icon: 'calendar', color: 'text-amber-600' },
