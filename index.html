@@ -117,7 +117,7 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
     <!-- Roast Overview Metadata Grid -->
-    <div id="metadataContainer" class="grid grid-cols-5 gap-1.5 sm:gap-3">
+    <div id="metadataContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
       <!-- Dynamic Metadata Cards Inserted Here -->
     </div>
 
@@ -130,7 +130,7 @@
           <div class="p-1.5 bg-amber-100 border border-amber-200 rounded-lg text-amber-700 flex-shrink-0">
             <i data-lucide="file-code" class="w-4 h-4"></i>
           </div>
-          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案名稱：</span>
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案 / 標題：</span>
           <h2 id="chartFileTitle" class="text-xs sm:text-base font-bold text-slate-800 truncate">
             Ethiopia_Yirgacheffe_G1.json
           </h2>
@@ -204,20 +204,26 @@
 
         <!-- Detailed Phase Table -->
         <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center text-xs">
-          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl">
-            <span class="text-amber-700 font-medium block">脫水期 (Dry)</span>
-            <span id="dryTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
-            <span id="dryRatioVal" class="text-[10px] sm:text-[11px] text-slate-500">0.0%</span>
+          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl flex flex-col justify-center items-center">
+            <div>
+              <span class="text-amber-700 font-medium block">脫水期 (Dry)</span>
+              <span id="dryTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+              <span id="dryRatioVal" class="text-[10px] sm:text-[11px] text-slate-500 font-medium block mt-1">0.0%</span>
+            </div>
           </div>
-          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl">
-            <span class="text-orange-700 font-medium block">梅納期 (Maillard)</span>
-            <span id="midTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
-            <span id="midRatioVal" class="text-[10px] sm:text-[11px] text-slate-500">0.0%</span>
+          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl flex flex-col justify-center items-center">
+            <div>
+              <span class="text-orange-700 font-medium block">梅納期 (Maillard)</span>
+              <span id="midTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+              <span id="midRatioVal" class="text-[10px] sm:text-[11px] text-slate-500 font-medium block mt-1">0.0%</span>
+            </div>
           </div>
-          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl">
-            <span class="text-rose-700 font-medium block">發展期 (DTR)</span>
-            <span id="devTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
-            <span id="devRatioVal" class="text-[10px] sm:text-[11px] text-slate-500">0.0%</span>
+          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl flex flex-col justify-center items-center">
+            <div>
+              <span class="text-rose-700 font-medium block">發展期 (DTR)</span>
+              <span id="devTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+              <span id="devRatioVal" class="text-[10px] sm:text-[11px] text-slate-500 font-medium block mt-1">0.0%</span>
+            </div>
           </div>
         </div>
       </div>
@@ -502,11 +508,6 @@
 
     // Utility: Format Seconds to MM:SS
     function formatTime(seconds) {
-
-    }
-
-    // Utility: Format Seconds to MM:SS
-    function formatTime(seconds) {
       if (isNaN(seconds) || seconds === null) return '--:--';
       const isNegative = seconds < 0;
       const absSec = Math.abs(seconds);
@@ -660,14 +661,16 @@
       const chargeBt = getTempAt(btArr, chargeIdx) !== '--' ? getTempAt(btArr, chargeIdx) : (computed.CHARGE_BT || '--');
       const dropBt = getTempAt(btArr, dropIdx) !== '--' ? getTempAt(btArr, dropIdx) : (computed.DROP_BT || '--');
 
-      // FC ΔT (Rise from FC to Drop)
+      // FC ΔT (Rise from FC to Drop) & Development Duration
       let fcDropDeltaVal = '未紀錄';
+      const devTimeFormatted = devDuration > 0 ? ` (${formatTime(devDuration)})` : '';
+
       if (fcIdx >= 0 && btArr[fcIdx] !== undefined && btArr[dropIdx] !== undefined && fcSec > 0) {
         const delta = (btArr[dropIdx] - btArr[fcIdx]).toFixed(1);
-        fcDropDeltaVal = `+${delta} °C`;
+        fcDropDeltaVal = `+${delta} °C${devTimeFormatted}`;
       } else if (computed.DROP_BT !== undefined && computed.FCs_BT !== undefined) {
         const delta = (computed.DROP_BT - computed.FCs_BT).toFixed(1);
-        fcDropDeltaVal = `+${delta} °C`;
+        fcDropDeltaVal = `+${delta} °C${devTimeFormatted}`;
       }
 
       const roasterName = data.roastertype || data.machinesetup || '通用烘焙機';
@@ -694,18 +697,18 @@
       const items = [
         { label: '烘焙日期 / 機型', val: `${data.roastisodate || 'N/A'} (${roasterName})`, icon: 'calendar', color: 'text-amber-600' },
         { label: '進豆溫 (Charge BT)', val: `${chargeBt} °C`, icon: 'arrow-down-circle', color: 'text-blue-700' },
-        { label: '一爆後升溫 (FC ΔT)', val: fcDropDeltaVal, icon: 'trending-up', color: 'text-amber-600' },
-        { label: '出豆溫 / 總時長', val: `${dropBt} °C (${formatTime(totalSec)})`, icon: 'flag', color: 'text-rose-600' },
+        { label: '出豆溫 (Drop BT)', val: `${dropBt} °C`, icon: 'flag', color: 'text-rose-600' },
+        { label: 'FC升溫 / 發展時間', val: fcDropDeltaVal, icon: 'trending-up', color: 'text-amber-600' },
         { label: 'Agtron 豆表 / 粉值', val: agtronVal, icon: 'palette', color: 'text-amber-700' }
       ];
 
       metadataContainer.innerHTML = items.map(item => `
-        <div class="glass-panel p-2 sm:p-3.5 rounded-lg sm:rounded-xl flex flex-col justify-between border-l-2 sm:border-l-4 border-l-amber-500 shadow-sm min-w-0">
-          <div class="flex items-center justify-between gap-1 min-w-0">
-            <span class="text-[9px] sm:text-[11px] text-slate-500 font-medium truncate">${item.label}</span>
-            <i data-lucide="${item.icon}" class="w-3 h-3 sm:w-4 sm:h-4 ${item.color} flex-shrink-0"></i>
+        <div class="glass-panel p-3 sm:p-3.5 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] sm:text-[11px] text-slate-500 font-medium">${item.label}</span>
+            <i data-lucide="${item.icon}" class="w-3.5 h-3.5 sm:w-4 sm:h-4 ${item.color}"></i>
           </div>
-          <div class="text-[11px] sm:text-sm font-bold text-slate-800 mt-1 truncate" title="${item.val}">${item.val}</div>
+          <div class="text-xs sm:text-sm font-bold text-slate-800 mt-1 truncate" title="${item.val}">${item.val}</div>
         </div>
       `).join('');
 
@@ -722,13 +725,58 @@
       document.getElementById('phaseDevTxt').innerText = `發展 ${devPct}%`;
 
       document.getElementById('dryTimeVal').innerText = formatTime(dryDuration);
-      document.getElementById('dryRatioVal').innerText = `${dryPct}% 總時間`;
-
       document.getElementById('midTimeVal').innerText = formatTime(midDuration);
-      document.getElementById('midRatioVal').innerText = `${midPct}% 總時間`;
-
       document.getElementById('devTimeVal').innerText = formatTime(devDuration);
-      document.getElementById('devRatioVal').innerText = `DTR: ${devPct}%`;
+
+      // 1. Dry Phase Avg RoR (Calculated from Turning Point TP to Dry End)
+      let dryRorVal = '--';
+      const tpBt = (tpIdx >= 0 && btArr[tpIdx] !== undefined) ? btArr[tpIdx] : computed.TP_BT;
+      const tpAbsSec = (tpIdx >= 0 && timeArr[tpIdx] !== undefined) ? timeArr[tpIdx] : computed.TP_TIME;
+      const drySecVal = (dryIdx >= 0 && timeArr[dryIdx] !== undefined) ? timeArr[dryIdx] : null;
+
+      if (dryIdx >= 0 && btArr[dryIdx] !== undefined && tpBt !== undefined && tpBt !== null && tpAbsSec !== undefined && drySecVal !== null) {
+        const durFromTp = drySecVal - tpAbsSec;
+        if (durFromTp > 0) {
+          const dTemp = btArr[dryIdx] - tpBt;
+          dryRorVal = (dTemp / (durFromTp / 60)).toFixed(1);
+        }
+      } else if (computed.DRY_BT !== undefined && computed.TP_BT !== undefined) {
+        const tpSecVal = computed.TP_TIME !== undefined ? computed.TP_TIME : chargeSec;
+        const dryTimeSec = (dryIdx >= 0 && timeArr[dryIdx] !== undefined) ? timeArr[dryIdx] : (computed.DRY_TIME || 0);
+        const durFromTp = dryTimeSec - tpSecVal;
+        if (durFromTp > 0) {
+          const dTemp = computed.DRY_BT - computed.TP_BT;
+          dryRorVal = (dTemp / (durFromTp / 60)).toFixed(1);
+        }
+      }
+
+      // 2. Maillard Phase Avg RoR
+      let midRorVal = '--';
+      if (fcIdx >= 0 && dryIdx >= 0 && btArr[fcIdx] !== undefined && btArr[dryIdx] !== undefined && midDuration > 0) {
+        const dTemp = btArr[fcIdx] - btArr[dryIdx];
+        midRorVal = (dTemp / (midDuration / 60)).toFixed(1);
+      } else if (computed.FCs_BT !== undefined && computed.DRY_BT !== undefined && midDuration > 0) {
+        const dTemp = computed.FCs_BT - computed.DRY_BT;
+        midRorVal = (dTemp / (midDuration / 60)).toFixed(1);
+      }
+
+      // 3. Development Phase Avg RoR
+      let devRorVal = '--';
+      if (dropIdx >= 0 && fcIdx >= 0 && btArr[dropIdx] !== undefined && btArr[fcIdx] !== undefined && devDuration > 0) {
+        const dTemp = btArr[dropIdx] - btArr[fcIdx];
+        devRorVal = (dTemp / (devDuration / 60)).toFixed(1);
+      } else if (computed.DROP_BT !== undefined && computed.FCs_BT !== undefined && devDuration > 0) {
+        const dTemp = computed.DROP_BT - computed.FCs_BT;
+        devRorVal = (dTemp / (devDuration / 60)).toFixed(1);
+      }
+
+      const dryRorStr = dryRorVal !== '--' ? ` (${dryRorVal} °C/min)` : '';
+      const midRorStr = midRorVal !== '--' ? ` (${midRorVal} °C/min)` : '';
+      const devRorStr = devRorVal !== '--' ? ` (${devRorVal} °C/min)` : '';
+
+      document.getElementById('dryRatioVal').innerText = `${dryPct}%${dryRorStr}`;
+      document.getElementById('midRatioVal').innerText = `${midPct}%${midRorStr}`;
+      document.getElementById('devRatioVal').innerText = `${devPct}%${devRorStr}`;
 
       // Stats Highlights
       const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
