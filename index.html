@@ -130,7 +130,7 @@
           <div class="p-1.5 bg-amber-100 border border-amber-200 rounded-lg text-amber-700 flex-shrink-0">
             <i data-lucide="file-code" class="w-4 h-4"></i>
           </div>
-          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案 / 標題：</span>
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案名稱：</span>
           <h2 id="chartFileTitle" class="text-xs sm:text-base font-bold text-slate-800 truncate">
             Ethiopia_Yirgacheffe_G1.json
           </h2>
@@ -813,7 +813,7 @@
         data: {
           datasets: [
             {
-              label: '豆溫 (BT)',
+              label: 'ＢＴ　',
               data: btPoints,
               borderColor: '#1d4ed8',
               backgroundColor: 'rgba(29, 78, 216, 0.08)',
@@ -825,7 +825,7 @@
               hidden: !visibleCurves.bt
             },
             {
-              label: '風溫 (ET)',
+              label: 'ＥＴ　',
               data: etPoints,
               borderColor: '#dc2626',
               backgroundColor: 'transparent',
@@ -837,20 +837,7 @@
               hidden: !visibleCurves.et
             },
             {
-              label: '進風溫 (Inlet)',
-              data: inletPoints,
-              borderColor: '#10b981',
-              backgroundColor: 'transparent',
-              borderWidth: 1.5,
-              borderDash: [3, 3],
-              tension: tensionVal,
-              pointRadius: 0,
-              pointHoverRadius: 5,
-              yAxisID: 'yTemp',
-              hidden: !visibleCurves.inlet
-            },
-            {
-              label: '升溫率 (BT RoR)',
+              label: 'ＲＯＲ',
               data: rorPoints,
               borderColor: '#0284c7',
               backgroundColor: 'rgba(56, 189, 248, 0.12)',
@@ -863,7 +850,20 @@
               hidden: !visibleCurves.ror
             },
             {
-              label: '排風壓/風門',
+              label: '進風溫',
+              data: inletPoints,
+              borderColor: '#10b981',
+              backgroundColor: 'transparent',
+              borderWidth: 1.5,
+              borderDash: [3, 3],
+              tension: tensionVal,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              yAxisID: 'yTemp',
+              hidden: !visibleCurves.inlet
+            },
+            {
+              label: '排風壓',
               data: pressPoints,
               borderColor: '#f59e0b',
               backgroundColor: 'transparent',
