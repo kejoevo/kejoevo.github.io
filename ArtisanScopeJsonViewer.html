@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="h-full bg-slate-100 text-slate-800">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artisan Scope Viewer - 咖啡烘焙數據分析儀</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            coffee: {
+              50: '#fdf8f6',
+              100: '#f2e8e5',
+              200: '#e4d0cb',
+              300: '#d2b2aa',
+              400: '#bd8e82',
+              500: '#a76f62',
+              600: '#8f574a',
+              700: '#754339',
+              800: '#613830',
+              900: '#52302a',
+              950: '#2c1815',
+            },
+            roast: {
+              bt: '#1d4ed8',    // Bean Temp - Dark Blue
+              et: '#dc2626',    // Env Temp - Red
+              inlet: '#10b981', // Inlet Temp - Green
+              ror: '#0284c7',   // RoR - Light Blue
+              press: '#f59e0b'  // Pressure - Amber
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js & Plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
+
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="theme-color" content="#d97706">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Artisan Scope">
+
+  <!-- Custom Styles -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(203, 213, 225, 0.6);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.25);
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col overflow-x-hidden custom-scrollbar bg-slate-100 text-slate-800">
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-amber-600 rounded-xl shadow-md text-white">
+          <i data-lucide="coffee" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-slate-800 leading-tight tracking-wide flex items-center gap-2">
+            Artisan Scope Viewer
+            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal">v2.6 Light Pro</span>
+          </h1>
+          <p class="text-xs text-slate-500">專業級咖啡烘焙曲線數據分析儀</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons Header -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- PWA Install Button -->
+        <button id="btnInstallPWA" class="hidden items-center gap-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg cursor-pointer shadow-md transition-all active:scale-95">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">安裝 App / 建立捷徑</span>
+          <span class="sm:hidden">安裝 App</span>
+        </button>
+
+        <label for="fileInput" class="flex items-center gap-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-lg cursor-pointer shadow-md transition-all active:scale-95">
+          <i data-lucide="upload" class="w-4 h-4"></i>
+          <span>開啟檔案</span>
+          <input type="file" id="fileInput" accept=".json,.alog" class="hidden">
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Roast Overview Metadata Grid -->
+    <div id="metadataContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <!-- Dynamic Metadata Cards Inserted Here -->
+    </div>
+
+    <!-- Chart Container & Toolbar -->
+    <div class="glass-panel rounded-2xl p-4 sm:p-6 shadow-xl relative space-y-4">
+      
+      <!-- Loaded File Title Banner -->
+      <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="p-1.5 bg-amber-100 border border-amber-200 rounded-lg text-amber-700">
+            <i data-lucide="file-code" class="w-4 h-4"></i>
+          </div>
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">檔案名稱：</span>
+          <h2 id="chartFileTitle" class="text-sm sm:text-base font-bold text-slate-800 truncate">
+            Ethiopia_Yirgacheffe_G1.json
+          </h2>
+        </div>
+      </div>
+
+      <!-- Chart Control Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        
+        <!-- Dataset Visibility Toggles -->
+        <div class="flex flex-wrap items-center gap-2" id="curveToggles">
+          <button data-target="bt" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-300 bg-blue-50 text-blue-900 font-medium transition-all shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-700 inline-block"></span> 豆溫 (BT)
+          </button>
+          <button data-target="et" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-300 bg-red-50 text-red-900 font-medium transition-all shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-600 inline-block"></span> 風溫 (ET)
+          </button>
+          <button data-target="inlet" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 font-medium transition-all shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 進風溫
+          </button>
+          <button data-target="ror" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-sky-300 bg-sky-50 text-sky-900 font-medium transition-all shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span> 升溫率 (RoR)
+          </button>
+          <button data-target="pressure" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 font-medium transition-all shadow-sm">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 排風壓
+          </button>
+        </div>
+
+        <!-- Export Options -->
+        <div class="flex items-center gap-2 ml-auto">
+          <button id="btnExportPNG" class="flex items-center gap-1 text-xs bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg transition-all shadow-sm" title="匯出圖表為高畫質 PNG">
+            <i data-lucide="image" class="w-3.5 h-3.5 text-amber-600"></i>
+            <span>匯出圖片</span>
+          </button>
+
+          <button id="btnExportCSV" class="flex items-center gap-1 text-xs bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg transition-all shadow-sm" title="下載烘焙數據 CSV 報表">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>匯出 CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Canvas Aspect Container -->
+      <div class="relative w-full h-[450px] sm:h-[520px] lg:h-[580px]">
+        <canvas id="roastChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Roast Phases Development Analysis -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Stage Breakdown Progress Bar -->
+      <div class="lg:col-span-2 glass-panel rounded-2xl p-5 space-y-4 shadow-xl">
+        <h3 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+          <i data-lucide="pie-chart" class="w-4 h-4 text-amber-600"></i>
+          烘焙階段時間比例 (Roast Phase Development)
+        </h3>
+
+        <!-- Multi-segment Progress Bar -->
+        <div class="h-6 w-full bg-slate-200 rounded-xl overflow-hidden flex p-1 border border-slate-300 text-[10px] font-bold">
+          <div id="phaseDryBar" class="bg-amber-500 hover:bg-amber-600 transition-all text-white flex items-center justify-center rounded-l" style="width: 0%">
+            <span id="phaseDryTxt" class="truncate px-1">脫水 0%</span>
+          </div>
+          <div id="phaseMidBar" class="bg-orange-500 hover:bg-orange-600 transition-all text-white flex items-center justify-center" style="width: 0%">
+            <span id="phaseMidTxt" class="truncate px-1">梅納 0%</span>
+          </div>
+          <div id="phaseDevBar" class="bg-rose-500 hover:bg-rose-600 transition-all text-white flex items-center justify-center rounded-r" style="width: 0%">
+            <span id="phaseDevTxt" class="truncate px-1">發展 0%</span>
+          </div>
+        </div>
+
+        <!-- Detailed Phase Table -->
+        <div class="grid grid-cols-3 gap-3 text-center text-xs">
+          <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+            <span class="text-amber-700 font-medium block">脫水期 (Dry)</span>
+            <span id="dryTimeVal" class="text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+            <span id="dryRatioVal" class="text-[11px] text-slate-500">0.0%</span>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+            <span class="text-orange-700 font-medium block">梅納期 (Mid/Maillard)</span>
+            <span id="midTimeVal" class="text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+            <span id="midRatioVal" class="text-[11px] text-slate-500">0.0%</span>
+          </div>
+          <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+            <span class="text-rose-700 font-medium block">發展期 (Finish / DTR)</span>
+            <span id="devTimeVal" class="text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+            <span id="devRatioVal" class="text-[11px] text-slate-500">0.0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Roast Metrics Summary -->
+      <div class="glass-panel rounded-2xl p-5 space-y-3 shadow-xl">
+        <h3 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
+          <i data-lucide="gauge" class="w-4 h-4 text-emerald-600"></i>
+          關鍵指標統計 (Key Highlights)
+        </h3>
+
+        <div class="space-y-2 text-xs">
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-200">
+            <span class="text-slate-500">最大升溫率 (Max BT RoR):</span>
+            <span id="statMaxRoR" class="font-semibold text-sky-700">-- °C/min</span>
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-200">
+            <span class="text-slate-500">一爆升溫率 (FC RoR):</span>
+            <span id="statFcRoR" class="font-semibold text-amber-700">-- °C/min</span>
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-slate-200">
+            <span class="text-slate-500">回溫點溫度 / 時間:</span>
+            <span id="statTPVal" class="font-semibold text-blue-800">-- °C / --:--</span>
+          </div>
+          <div class="flex justify-between items-center py-1.5">
+            <span class="text-slate-500">總溫升ΔT (Drop - Charge):</span>
+            <span id="statTotalDeltaT" class="font-semibold text-rose-700">-- °C</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- PWA Installation Guide Modal for Mobile / Android -->
+  <div id="pwaInstallModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 relative animate-in fade-in zoom-in duration-200">
+      <button id="btnClosePwaModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="flex items-center space-x-3">
+        <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
+          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-slate-800">安裝 App 或建立桌面捷徑</h3>
+          <p class="text-xs text-slate-500">將 Artisan Scope Viewer 新增至 Android 主畫面</p>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200">
+        <div class="flex items-start space-x-2.5">
+          <span class="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center shrink-0 font-bold text-[10px]">1</span>
+          <span>點擊 Android 瀏覽器右上角選單 <strong class="text-slate-800">「⋮」</strong> 或 <strong class="text-slate-800">分享</strong> 圖示。</span>
+        </div>
+        <div class="flex items-start space-x-2.5">
+          <span class="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center shrink-0 font-bold text-[10px]">2</span>
+          <span>點選 <strong class="text-slate-800">「安裝應用程式」</strong> 或 <strong class="text-slate-800">「新增至主畫面」</strong> (Add to Home screen)。</span>
+        </div>
+        <div class="flex items-start space-x-2.5">
+          <span class="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center shrink-0 font-bold text-[10px]">3</span>
+          <span>確認名稱後點擊「新增」，即可從手機桌面像 App 一樣隨時開啟！</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button id="btnPwaModalConfirm" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl text-xs transition-all shadow-md active:scale-95">
+          我知道了
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* Default Artisan Sample Data Object */
+    const SAMPLE_ARTISAN_DATA = {
+      roastisodate: "2024-03-30",
+      roasttime: "14:25:00",
+      roastertype: "Diedrich IR-12 Pro",
+      title: "埃塞俄比亞 耶加雪菲 G1 (Ethiopia Yirgacheffe)",
+      beans: "Ethiopia Yirgacheffe Washed G1",
+      timex: [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360, 375, 390, 405, 420, 435, 450, 465, 480, 495, 510, 525, 540, 555, 570, 585, 600, 615, 630, 645],
+      temp1: [200, 185, 172, 163, 156, 153, 155, 158, 163, 169, 175, 181, 187, 193, 198, 203, 208, 212, 216, 220, 223, 226, 229, 231, 233, 235, 236, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 240, 240, 239, 238, 237, 236, 235], // ET (Env Temp)
+      temp2: [200, 160, 125, 105, 95, 92, 94, 98, 104, 111, 118, 126, 134, 142, 150, 157, 164, 170, 176, 181, 186, 190, 194, 198, 201, 204, 207, 210, 212, 214, 216, 218, 220, 221, 222, 223, 224, 224, 223, 222, 221, 220, 218, 216], // BT (Bean Temp)
+      timeindex: [4, 18, 30, 43], // Standard Artisan mapping: Index 0: Charge, Index 1: Dry End, Index 2: FCs, Index 3: Drop
+      computed: {
+        CHARGE_BT: 200,
+        TP_BT: 92,
+        TP_TIME: 75,
+        DRY_BT: 186,
+        FCs_BT: 220,
+        DROP_BT: 216
+      },
+      extratemp1: [
+        [220, 210, 200, 195, 190, 192, 198, 205, 212, 220, 228, 235, 240, 245, 248, 250, 250, 248, 245, 240, 235, 230, 225, 220, 215, 210, 205, 200, 195, 190, 185, 180, 175, 170, 165, 160, 155, 150, 145, 140, 135, 130, 125, 120],
+        [5, 5, 8, 10, 12, 12, 15, 15, 18, 18, 20, 20, 22, 22, 25, 25, 25, 25, 28, 28, 30, 30, 30, 30, 32, 32, 30, 30, 28, 28, 25, 25, 20, 20, 18, 18, 15, 15, 12, 10, 8, 5, 5, 0]
+      ]
+    };
+
+    // Global State Variables
+    let currentData = null;
+    let chartInstance = null;
+    const rorSmoothWindow = 9; // Strong RoR smoothing filter
+    let visibleCurves = {
+      bt: true,
+      et: true,
+      inlet: true,
+      ror: true,
+      pressure: true
+    };
+
+    // PWA & Android Shortcut Installation Logic
+    let deferredPrompt = null;
+    const btnInstallPWA = document.getElementById('btnInstallPWA');
+    const pwaInstallModal = document.getElementById('pwaInstallModal');
+    const btnClosePwaModal = document.getElementById('btnClosePwaModal');
+    const btnPwaModalConfirm = document.getElementById('btnPwaModalConfirm');
+
+    // 1. Dynamic Web App Manifest Injection with Base64 App Icon
+    function setupPWAManifest() {
+      try {
+        const iconCanvas = document.createElement('canvas');
+        iconCanvas.width = 192;
+        iconCanvas.height = 192;
+        const ctx = iconCanvas.getContext('2d');
+        ctx.fillStyle = '#d97706';
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(0, 0, 192, 192, 40);
+        else ctx.rect(0, 0, 192, 192);
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 90px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('☕', 96, 96);
+        const iconUrl = iconCanvas.toDataURL('image/png');
+
+        const manifest = {
+          name: "Artisan Scope Viewer",
+          short_name: "Artisan Scope",
+          description: "專業級咖啡烘焙曲線數據分析儀",
+          start_url: window.location.href,
+          display: "standalone",
+          background_color: "#f1f5f9",
+          theme_color: "#d97706",
+          icons: [
+            { src: iconUrl, sizes: "192x192", type: "image/png" },
+            { src: iconUrl, sizes: "512x512", type: "image/png" }
+          ]
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = URL.createObjectURL(manifestBlob);
+        document.head.appendChild(manifestLink);
+      } catch (err) {
+        console.warn('PWA Manifest setup note:', err);
+      }
+    }
+
+    // 2. Service Worker Registration
+    function registerSW() {
+      if ('serviceWorker' in navigator) {
+        try {
+          const swCode = `
+            self.addEventListener('install', (e) => self.skipWaiting());
+            self.addEventListener('activate', (e) => self.clients.claim());
+            self.addEventListener('fetch', (e) => {});
+          `;
+          const swBlob = new Blob([swCode], { type: 'text/javascript' });
+          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+        } catch (e) {}
+      }
+    }
+
+    // 3. Listen for Android native PWA install prompt
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (btnInstallPWA) {
+        btnInstallPWA.classList.remove('hidden');
+        btnInstallPWA.classList.add('flex');
+      }
+    });
+
+    // 4. Handle Install Button Interaction
+    if (btnInstallPWA) {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isMobile) {
+        btnInstallPWA.classList.remove('hidden');
+        btnInstallPWA.classList.add('flex');
+      }
+
+      btnInstallPWA.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          const { outcome } = await deferredPrompt.userChoice;
+          if (outcome === 'accepted') {
+            btnInstallPWA.classList.add('hidden');
+          }
+          deferredPrompt = null;
+        } else {
+          if (pwaInstallModal) pwaInstallModal.classList.remove('hidden');
+        }
+      });
+    }
+
+    if (btnClosePwaModal) {
+      btnClosePwaModal.addEventListener('click', () => pwaInstallModal.classList.add('hidden'));
+    }
+    if (btnPwaModalConfirm) {
+      btnPwaModalConfirm.addEventListener('click', () => pwaInstallModal.classList.add('hidden'));
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if (btnInstallPWA) btnInstallPWA.classList.add('hidden');
+      deferredPrompt = null;
+    });
+
+    // Initialize PWA setup
+    setupPWAManifest();
+    registerSW();
+
+    // DOM Elements
+    const fileInput = document.getElementById('fileInput');
+    const metadataContainer = document.getElementById('metadataContainer');
+    const btnExportPNG = document.getElementById('btnExportPNG');
+    const btnExportCSV = document.getElementById('btnExportCSV');
+
+    // Helper: Safely format temperature values
+    function getTempAt(arr, index) {
+      if (!arr || index === undefined || index < 0 || index >= arr.length) return '--';
+      const val = arr[index];
+      return (val !== null && val !== undefined && !isNaN(val)) ? val.toFixed(1) : '--';
+    }
+
+    // Standard Artisan mapping: temp2 = BT (Bean Temp), temp1 = ET (Env Temp)
+    function getBtEtArrays(data) {
+      if (!data) return { btArr: [], etArr: [] };
+      const t1 = data.temp1 || []; // Environment Temperature (ET)
+      const t2 = data.temp2 || []; // Bean Temperature (BT)
+      return { btArr: t2, etArr: t1 };
+    }
+
+    // Utility: Format Seconds to MM:SS
+    function formatTime(seconds) {
+      if (isNaN(seconds) || seconds === null) return '--:--';
+      const isNegative = seconds < 0;
+      const absSec = Math.abs(seconds);
+      const m = Math.floor(absSec / 60);
+      const s = Math.floor(absSec % 60);
+      const formatted = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      return isNegative ? `-${formatted}` : formatted;
+    }
+
+    // Helper to accurately parse Artisan Event Indices according to standard Artisan specifications
+    // Artisan timeindex standard: [0: Charge, 1: Dry End, 2: FCs, 3: FCe, 4: SCs, 5: SCe, 6: Drop]
+    // Turning Point (TP) is calculated as the minimum BT point after Charge.
+    function parseArtisanEvents(data) {
+      if (!data) return { chargeIdx: 0, tpIdx: 0, dryIdx: -1, fcIdx: -1, dropIdx: 0 };
+      
+      const timeArr = data.timex || [];
+      const { btArr } = getBtEtArrays(data);
+      const timeIdx = data.timeindex || [];
+      const computed = data.computed || {};
+
+      let chargeIdx = 0;
+      let dryIdx = -1;
+      let fcIdx = -1;
+      let dropIdx = timeArr.length > 0 ? timeArr.length - 1 : 0;
+      let tpIdx = -1;
+
+      // 1. Charge Index (timeindex[0])
+      if (timeIdx.length > 0 && timeIdx[0] >= 0 && timeIdx[0] < timeArr.length) {
+        chargeIdx = timeIdx[0];
+      }
+
+      // 2. Dry End / 黃化 (timeindex[1] in standard Artisan)
+      if (timeIdx.length > 1 && timeIdx[1] > 0 && timeIdx[1] < timeArr.length) {
+        dryIdx = timeIdx[1];
+      }
+
+      // 3. FCs / 一爆開始 (timeindex[2] in standard Artisan)
+      if (timeIdx.length > 2 && timeIdx[2] > 0 && timeIdx[2] < timeArr.length) {
+        fcIdx = timeIdx[2];
+      }
+
+      // 4. Drop Index / 出豆
+      if (timeIdx.length >= 7 && timeIdx[6] > 0 && timeIdx[6] < timeArr.length) {
+        dropIdx = timeIdx[6];
+      } else if (timeIdx.length >= 5 && timeIdx[4] > 0 && timeIdx[4] < timeArr.length && timeIdx.length < 7) {
+        dropIdx = timeIdx[4];
+      } else {
+        // Fallback: search highest valid non-zero entry in timeindex
+        for (let i = timeIdx.length - 1; i >= 0; i--) {
+          if (timeIdx[i] > chargeIdx && timeIdx[i] < timeArr.length) {
+            dropIdx = timeIdx[i];
+            break;
+          }
+        }
+      }
+
+      // 5. Turning Point (TP) Index
+      // Check computed.TP_TIME or computed.TP_BT
+      if (computed.TP_TIME !== undefined && computed.TP_TIME !== null) {
+        const tpSec = computed.TP_TIME;
+        let minDiff = Infinity;
+        for (let i = chargeIdx; i < timeArr.length; i++) {
+          const diff = Math.abs(timeArr[i] - tpSec);
+          if (diff < minDiff) {
+            minDiff = diff;
+            tpIdx = i;
+          }
+        }
+      }
+
+      // Fallback: Search for minimum BT value in the window between Charge and Dry End (or 2.5 mins post-charge)
+      if (tpIdx < 0 || tpIdx <= chargeIdx) {
+        let minTemp = Infinity;
+        let minI = chargeIdx;
+        const searchEnd = (dryIdx > chargeIdx) ? dryIdx : Math.min(timeArr.length - 1, chargeIdx + 150);
+        for (let i = chargeIdx; i <= searchEnd; i++) {
+          if (btArr[i] !== undefined && btArr[i] !== null && btArr[i] < minTemp) {
+            minTemp = btArr[i];
+            minI = i;
+          }
+        }
+        tpIdx = minI;
+      }
+
+      return { chargeIdx, tpIdx, dryIdx, fcIdx, dropIdx };
+    }
+
+    // RoR Calculation with Moving Average Filtering
+    function calculateRoR(timeArr, tempArr, windowSize = 9) {
+      if (!timeArr || !tempArr || timeArr.length !== tempArr.length || tempArr.length < 2) return [];
+      
+      const rawRor = [];
+      for (let i = 0; i < tempArr.length; i++) {
+        if (i === 0) {
+          rawRor.push(0);
+        } else {
+          const dt = (timeArr[i] - timeArr[i - 1]) / 60; // minutes
+          const dTemp = tempArr[i] - tempArr[i - 1];
+          const rate = (dt > 0 && dTemp !== undefined && !isNaN(dTemp)) ? (dTemp / dt) : 0;
+          rawRor.push(rate);
+        }
+      }
+
+      if (windowSize <= 1) {
+        return rawRor.map(r => Math.max(-10, Math.min(35, parseFloat(r.toFixed(1)))));
+      }
+
+      const smoothed = [];
+      const halfWin = Math.floor(windowSize / 2);
+
+      for (let i = 0; i < rawRor.length; i++) {
+        let sum = 0;
+        let count = 0;
+        for (let j = Math.max(0, i - halfWin); j <= Math.min(rawRor.length - 1, i + halfWin); j++) {
+          sum += rawRor[j];
+          count++;
+        }
+        let avg = count > 0 ? (sum / count) : 0;
+        avg = Math.max(-10, Math.min(35, avg));
+        smoothed.push(parseFloat(avg.toFixed(1)));
+      }
+
+      return smoothed;
+    }
+
+    function updateMetadataUI(data) {
+      const computed = data.computed || {};
+      const timeArr = data.timex || [];
+      const { btArr } = getBtEtArrays(data);
+      
+      // Parse event indices cleanly
+      const { chargeIdx, tpIdx, dryIdx, fcIdx, dropIdx } = parseArtisanEvents(data);
+
+      // Timings relative to Charge (進豆為 0 秒)
+      const chargeSec = timeArr[chargeIdx] || 0;
+      const totalSec = Math.max(0, (timeArr[dropIdx] !== undefined ? timeArr[dropIdx] : timeArr[timeArr.length - 1]) - chargeSec);
+      const drySec = (dryIdx >= 0 && timeArr[dryIdx] !== undefined) ? timeArr[dryIdx] - chargeSec : 0;
+      const fcSec = (fcIdx >= 0 && timeArr[fcIdx] !== undefined) ? timeArr[fcIdx] - chargeSec : 0;
+      const tpSec = (tpIdx >= 0 && timeArr[tpIdx] !== undefined) ? timeArr[tpIdx] - chargeSec : 0;
+
+      const dryDuration = Math.max(0, drySec);
+      const midDuration = (fcSec > drySec && drySec > 0) ? (fcSec - drySec) : (fcSec > 0 ? fcSec : 0);
+      const devDuration = (totalSec > fcSec && fcSec > 0) ? (totalSec - fcSec) : 0;
+
+      const dryPct = totalSec > 0 ? ((dryDuration / totalSec) * 100).toFixed(1) : '0';
+      const midPct = totalSec > 0 ? ((midDuration / totalSec) * 100).toFixed(1) : '0';
+      const devPct = totalSec > 0 ? ((devDuration / totalSec) * 100).toFixed(1) : '0';
+
+      // Safe Temperature Extractions
+      const chargeBt = getTempAt(btArr, chargeIdx) !== '--' ? getTempAt(btArr, chargeIdx) : (computed.CHARGE_BT || '--');
+      const fcBt = (fcIdx >= 0 && getTempAt(btArr, fcIdx) !== '--') ? getTempAt(btArr, fcIdx) : (computed.FCs_BT || '--');
+      const dropBt = getTempAt(btArr, dropIdx) !== '--' ? getTempAt(btArr, dropIdx) : (computed.DROP_BT || '--');
+
+      // Metadata cards render
+      const items = [
+        { label: '烘焙日期/時間', val: `${data.roastisodate || 'N/A'} ${data.roasttime || ''}`, icon: 'calendar', color: 'text-amber-600' },
+        { label: '進豆溫 (Charge BT)', val: `${chargeBt} °C`, icon: 'arrow-down-circle', color: 'text-blue-700' },
+        { label: '一爆點 (FCs BT)', val: fcSec > 0 ? `${fcBt} °C @ ${formatTime(fcSec)}` : '未紀錄', icon: 'zap', color: 'text-amber-600' },
+        { label: '出豆溫 / 總時長', val: `${dropBt} °C (${formatTime(totalSec)})`, icon: 'flag', color: 'text-rose-600' }
+      ];
+
+      metadataContainer.innerHTML = items.map(item => `
+        <div class="glass-panel p-3.5 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-slate-500 font-medium">${item.label}</span>
+            <i data-lucide="${item.icon}" class="w-4 h-4 ${item.color}"></i>
+          </div>
+          <div class="text-sm font-bold text-slate-800 mt-1 truncate" title="${item.val}">${item.val}</div>
+        </div>
+      `).join('');
+
+      // Refresh icons inside metadata
+      lucide.createIcons();
+
+      // Update Phase Bar Elements
+      document.getElementById('phaseDryBar').style.width = `${dryPct}%`;
+      document.getElementById('phaseDryTxt').innerText = `脫水 ${dryPct}%`;
+      
+      document.getElementById('phaseMidBar').style.width = `${midPct}%`;
+      document.getElementById('phaseMidTxt').innerText = `梅納 ${midPct}%`;
+      
+      document.getElementById('phaseDevBar').style.width = `${devPct}%`;
+      document.getElementById('phaseDevTxt').innerText = `發展 ${devPct}%`;
+
+      document.getElementById('dryTimeVal').innerText = formatTime(dryDuration);
+      document.getElementById('dryRatioVal').innerText = `${dryPct}% 的總烘焙時間`;
+
+      document.getElementById('midTimeVal').innerText = formatTime(midDuration);
+      document.getElementById('midRatioVal').innerText = `${midPct}% 的總烘焙時間`;
+
+      document.getElementById('devTimeVal').innerText = formatTime(devDuration);
+      document.getElementById('devRatioVal').innerText = `DTR: ${devPct}%`;
+
+      // Update Stats Highlights
+      const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
+      const postChargeRor = rorArr.slice(chargeIdx);
+      const maxRor = postChargeRor.length > 0 ? Math.max(...postChargeRor) : 0;
+      const fcRor = (fcIdx >= 0 && rorArr[fcIdx] !== undefined) ? rorArr[fcIdx] : 0;
+      
+      const dropTempNum = btArr[dropIdx];
+      const chargeTempNum = btArr[chargeIdx];
+      
+      const totalDelta = (dropTempNum !== undefined && chargeTempNum !== undefined) 
+        ? (dropTempNum - chargeTempNum).toFixed(1) 
+        : '0.0';
+
+      const tpBtVal = (tpIdx >= 0 && getTempAt(btArr, tpIdx) !== '--') ? getTempAt(btArr, tpIdx) : (computed.TP_BT || '--');
+
+      document.getElementById('statMaxRoR').innerText = `${maxRor} °C/min`;
+      document.getElementById('statFcRoR').innerText = `${fcRor} °C/min`;
+      document.getElementById('statTPVal').innerText = `${tpBtVal} °C / ${formatTime(tpSec)}`;
+      document.getElementById('statTotalDeltaT').innerText = `+${totalDelta} °C`;
+    }
+
+    // Zip time and temperature values into {x: relative_minutes, y: temp} objects
+    function zipData(timeArr, valArr, chargeSec = 0, hideBeforeCharge = false) {
+      if (!timeArr || !valArr) return [];
+      const len = Math.min(timeArr.length, valArr.length);
+      const res = [];
+      for (let i = 0; i < len; i++) {
+        if (timeArr[i] !== undefined && valArr[i] !== undefined && valArr[i] !== null && !isNaN(valArr[i])) {
+          if (hideBeforeCharge && timeArr[i] < chargeSec) {
+            continue;
+          }
+          res.push({ x: (timeArr[i] - chargeSec) / 60, y: valArr[i] });
+        }
+      }
+      return res;
+    }
+
+    function renderChart(data) {
+      const ctx = document.getElementById('roastChart').getContext('2d');
+
+      const timeArr = data.timex || [];
+      const { btArr, etArr } = getBtEtArrays(data);
+      const inletArr = (data.extratemp1 && data.extratemp1[0]) ? data.extratemp1[0] : [];
+      const pressArr = (data.extratemp1 && data.extratemp1[1]) ? data.extratemp1[1] : [];
+      const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
+
+      // Key Events & Charge baseline time
+      const { chargeIdx, tpIdx, dryIdx, fcIdx, dropIdx } = parseArtisanEvents(data);
+      const chargeSec = (chargeIdx < timeArr.length && timeArr[chargeIdx] !== undefined) ? timeArr[chargeIdx] : 0;
+
+      // Zipped Point Data for Linear Scale (relative to Charge)
+      const btPoints = zipData(timeArr, btArr, chargeSec);
+      const etPoints = zipData(timeArr, etArr, chargeSec);
+      const inletPoints = zipData(timeArr, inletArr, chargeSec);
+      const rorPoints = zipData(timeArr, rorArr, chargeSec, true);
+      const pressPoints = zipData(timeArr, pressArr, chargeSec);
+
+      // Calculate relative bounds in minutes
+      const minSec = timeArr.length > 0 ? timeArr[0] - chargeSec : 0;
+      const maxSec = timeArr.length > 0 ? timeArr[timeArr.length - 1] - chargeSec : 600;
+      const minMin = Math.floor(minSec / 60);
+      const maxMin = Math.ceil(maxSec / 60);
+
+      // Key Events Annotations setup
+      const eventDefs = [
+        { name: 'Charge (進豆)', idx: chargeIdx, color: '#1d4ed8' },
+        { name: 'TP (回溫點)', idx: tpIdx, color: '#2563eb' },
+        { name: 'Dry End (黃化)', idx: dryIdx, color: '#d97706' },
+        { name: 'FCs (一爆)', idx: fcIdx, color: '#dc2626' },
+        { name: 'Drop (出豆)', idx: dropIdx, color: '#7c3aed' }
+      ];
+
+      const annotations = {};
+      eventDefs.forEach((evt, keyIdx) => {
+        if (evt.idx >= 0 && evt.idx < timeArr.length) {
+          const tSec = timeArr[evt.idx];
+          const relSec = tSec - chargeSec;
+          const xValMin = relSec / 60;
+          const labelVal = formatTime(relSec);
+
+          annotations[`eventLine_${keyIdx}`] = {
+            type: 'line',
+            xMin: xValMin,
+            xMax: xValMin,
+            borderColor: evt.color,
+            borderWidth: 1.5,
+            borderDash: [4, 4],
+            label: {
+              display: true,
+              content: `${evt.name}\n${labelVal}`,
+              position: 'start',
+              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              color: evt.color,
+              font: { size: 10, weight: 'bold' },
+              padding: 4,
+              borderRadius: 4
+            }
+          };
+        }
+      });
+
+      const tensionVal = 0.35;
+
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [
+            {
+              label: '豆溫 (BT)',
+              data: btPoints,
+              borderColor: '#1d4ed8', // Dark Blue
+              backgroundColor: 'rgba(29, 78, 216, 0.08)',
+              borderWidth: 2.5,
+              tension: tensionVal,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              yAxisID: 'yTemp',
+              hidden: !visibleCurves.bt
+            },
+            {
+              label: '風溫 (ET)',
+              data: etPoints,
+              borderColor: '#dc2626', // Red
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              tension: tensionVal,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              yAxisID: 'yTemp',
+              hidden: !visibleCurves.et
+            },
+            {
+              label: '進風溫 (Inlet)',
+              data: inletPoints,
+              borderColor: '#10b981',
+              backgroundColor: 'transparent',
+              borderWidth: 1.5,
+              borderDash: [3, 3],
+              tension: tensionVal,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              yAxisID: 'yTemp',
+              hidden: !visibleCurves.inlet
+            },
+            {
+              label: '升溫率 (BT RoR)',
+              data: rorPoints,
+              borderColor: '#0284c7', // Light Blue / Sky Blue
+              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+              borderWidth: 2.5,
+              tension: 0.45,
+              cubicInterpolationMode: 'monotone',
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              yAxisID: 'ySecondary',
+              hidden: !visibleCurves.ror
+            },
+            {
+              label: '排風壓/風門',
+              data: pressPoints,
+              borderColor: '#f59e0b',
+              backgroundColor: 'transparent',
+              borderWidth: 1.5,
+              tension: tensionVal,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              yAxisID: 'yTemp',
+              hidden: !visibleCurves.pressure
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              titleColor: '#0f172a',
+              bodyColor: '#334155',
+              borderColor: '#cbd5e1',
+              borderWidth: 1,
+              padding: 10,
+              displayColors: true,
+              callbacks: {
+                title: function(items) {
+                  if (!items.length) return '';
+                  const xMin = items[0].parsed.x;
+                  const sec = Math.round(xMin * 60);
+                  return `時間: ${formatTime(sec)} (${xMin >= 0 ? '+' : ''}${xMin.toFixed(2)} 分鐘)`;
+                },
+                label: function(context) {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null && context.parsed.y !== undefined) {
+                    if (context.dataset.label.includes('RoR')) {
+                      label += context.parsed.y.toFixed(1) + ' °C/min';
+                    } else if (context.dataset.label.includes('風壓')) {
+                      label += context.parsed.y.toFixed(1) + ' Pa / %';
+                    } else {
+                      label += context.parsed.y.toFixed(1) + ' °C';
+                    }
+                  }
+                  return label;
+                }
+              }
+            },
+            annotation: {
+              annotations: annotations
+            }
+          },
+          scales: {
+            x: {
+              type: 'linear',
+              min: minMin,
+              suggestedMax: Math.max(maxMin, 10),
+              grid: { color: 'rgba(0, 0, 0, 0.05)' },
+              ticks: { 
+                color: '#475569', 
+                font: { size: 11 },
+                stepSize: 1, // Strict 1 minute intervals
+                precision: 0,
+                callback: function(val) {
+                  if (Math.abs(val - Math.round(val)) < 0.001) {
+                    return Math.round(val);
+                  }
+                  return '';
+                }
+              },
+              title: { display: true, text: '時間 (進豆為 0 分鐘)', color: '#64748b', font: { size: 11 } }
+            },
+            yTemp: {
+              type: 'linear',
+              position: 'left',
+              min: 0,
+              max: 350,
+              grid: { color: 'rgba(0, 0, 0, 0.05)' },
+              ticks: { 
+                color: '#475569', 
+                font: { size: 11 },
+                stepSize: 25
+              },
+              title: { display: true, text: '溫度 (°C) / 風壓', color: '#1d4ed8', font: { size: 11, weight: 'bold' } }
+            },
+            ySecondary: {
+              type: 'linear',
+              position: 'right',
+              min: 0,
+              max: 35,
+              grid: { drawOnChartArea: false },
+              ticks: { 
+                color: '#475569', 
+                font: { size: 11 },
+                stepSize: 5
+              },
+              title: { display: true, text: 'RoR (°C/min)', color: '#0284c7', font: { size: 11, weight: 'bold' } }
+            }
+          }
+        }
+      });
+    }
+
+    function loadData(data) {
+      if (!data) return;
+      currentData = data;
+      updateMetadataUI(data);
+      renderChart(data);
+    }
+
+    // File Upload Handler
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      readFile(file);
+    });
+
+    function readFile(file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        try {
+          let parsed = JSON.parse(evt.target.result);
+          
+          // Support nested structure in some Artisan json exports
+          if (!parsed.timex && parsed.data && parsed.data.timex) {
+            parsed = parsed.data;
+          }
+
+          if (!parsed.timex || !Array.isArray(parsed.timex)) {
+            alert('檔案格式不符：找不到有效的 timex 時間列，請確認為 Artisan 匯出的 .json 或 .alog 檔。');
+            return;
+          }
+
+          // Update Chart Header with Opened JSON File Name
+          const titleElem = document.getElementById('chartFileTitle');
+          if (titleElem) {
+            titleElem.innerText = file.name;
+          }
+
+          loadData(parsed);
+        } catch (err) {
+          alert('解析檔案失敗，請確保此檔案為有效的 Artisan JSON / alog 格式。');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Custom Curve Visibility Toggles
+    document.getElementById('curveToggles').addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+      const target = btn.getAttribute('data-target');
+      visibleCurves[target] = !visibleCurves[target];
+      btn.classList.toggle('opacity-40', !visibleCurves[target]);
+      if (currentData) renderChart(currentData);
+    });
+
+    // Image PNG Export
+    btnExportPNG.addEventListener('click', () => {
+      if (!chartInstance) return;
+      const url = chartInstance.toBase64Image('image/png', 1.0);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Artisan_Roast_Chart_${currentData?.roastisodate || 'export'}.png`;
+      a.click();
+    });
+
+    // CSV Data Export
+    btnExportCSV.addEventListener('click', () => {
+      if (!currentData) return;
+      const timeArr = currentData.timex || [];
+      const { btArr, etArr } = getBtEtArrays(currentData);
+      const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
+      
+      const timeIdx = currentData.timeindex || [];
+      const chargeIdx = timeIdx[0] || 0;
+      const chargeSec = (chargeIdx < timeArr.length && timeArr[chargeIdx] !== undefined) ? timeArr[chargeIdx] : 0;
+
+      let csvContent = 'Relative Sec,Relative Min,Bean Temp(BT),Env Temp(ET),BT RoR\n';
+      for (let i = 0; i < timeArr.length; i++) {
+        const relSec = timeArr[i] - chargeSec;
+        const minVal = (relSec / 60).toFixed(2);
+        const rorVal = (timeArr[i] >= chargeSec && rorArr[i] !== undefined) ? rorArr[i] : '';
+        csvContent += `${relSec},"${minVal}",${btArr[i] !== undefined ? btArr[i] : ''},${etArr[i] !== undefined ? etArr[i] : ''},${rorVal}\n`;
+      }
+
+      const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Artisan_Roast_Data_${currentData?.roastisodate || 'export'}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Application Initialization
+    window.onload = function() {
+      lucide.createIcons();
+      loadData(SAMPLE_ARTISAN_DATA);
+    };
+  </script>
+</body>
+</html>
