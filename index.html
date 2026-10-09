@@ -122,7 +122,7 @@
     </div>
 
     <!-- Chart Container & Toolbar -->
-    <div class="glass-panel rounded-2xl p-3.5 sm:p-6 shadow-xl relative space-y-3 sm:space-y-4">
+    <div id="dropZone" class="glass-panel rounded-2xl p-3.5 sm:p-6 shadow-xl relative space-y-3 sm:space-y-4 transition-all border-2 border-transparent">
       
       <!-- Loaded File Title Banner -->
       <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
@@ -130,11 +130,12 @@
           <div class="p-1.5 bg-amber-100 border border-amber-200 rounded-lg text-amber-700 flex-shrink-0">
             <i data-lucide="file-code" class="w-4 h-4"></i>
           </div>
-          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案名稱：</span>
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案 / 標題：</span>
           <h2 id="chartFileTitle" class="text-xs sm:text-base font-bold text-slate-800 truncate">
             Ethiopia_Yirgacheffe_G1.json
           </h2>
         </div>
+        <span class="text-[11px] text-slate-400 hidden md:inline-block">可拖曳 .alog / .json 檔案至此處開啟</span>
       </div>
 
       <!-- Chart Control Bar -->
@@ -249,6 +250,9 @@
       </div>
     </div>
   </main>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
   <!-- PWA Android Install & Shortcut Modal -->
   <div id="pwaInstallModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
@@ -402,6 +406,77 @@
     const btnTriggerPWA = document.getElementById('btnTriggerPWA');
     const pwaDirectTriggerBox = document.getElementById('pwaDirectTriggerBox');
 
+    function showToast(message, type = 'error') {
+      const toastContainer = document.getElementById('toastContainer');
+      if (!toastContainer) return;
+
+      const toast = document.createElement('div');
+      const bgColor = type === 'error' ? 'bg-rose-600' : (type === 'success' ? 'bg-emerald-600' : 'bg-slate-800');
+      const iconName = type === 'error' ? 'alert-circle' : (type === 'success' ? 'check-circle' : 'info');
+
+      toast.className = `${bgColor} text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 transition-all transform translate-y-2 opacity-0 pointer-events-auto max-w-md`;
+      toast.innerHTML = `<i data-lucide="${iconName}" class="w-4 h-4 flex-shrink-0"></i><span>${message}</span>`;
+
+      toastContainer.appendChild(toast);
+      if (window.lucide) lucide.createIcons();
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    function parseArtisanContent(content) {
+      if (!content || typeof content !== 'string') {
+        throw new Error('檔案內容空白或無效。');
+      }
+
+      let sanitized = content.trim();
+
+      // 1. Try standard JSON parsing
+      try {
+        return JSON.parse(sanitized);
+      } catch (e1) {
+        // Continue to Python dict parsing
+      }
+
+      // Handle Python byte string headers if present (e.g., b"{...}")
+      if (sanitized.startsWith("b'") || sanitized.startsWith('b"')) {
+        sanitized = sanitized.substring(2, sanitized.length - 1);
+      }
+
+      // 2. JS Context Execution for Python Dict (True, False, None handling)
+      try {
+        const evalFn = new Function(`
+          const True = true, False = false, None = null;
+          return (${sanitized});
+        `);
+        const result = evalFn();
+        if (result && typeof result === 'object') {
+          return result;
+        }
+      } catch (e2) {
+        // Fallback to regex transformation
+      }
+
+      // 3. Regex string normalization to strict JSON
+      try {
+        let jsonStr = sanitized
+          .replace(/\bTrue\b/g, 'true')
+          .replace(/\bFalse\b/g, 'false')
+          .replace(/\bNone\b/g, 'null')
+          .replace(/'([^'\\]*(?:\\.[^'\\]*)*)'/g, '"$1"');
+        
+        return JSON.parse(jsonStr);
+      } catch (e3) {
+        throw new Error('無法解析此 .alog 檔案。如果此檔為二進位檔，請於 Artisan 中選擇「檔案」➔「匯出 JSON」後重新開啟。');
+      }
+    }
+
     // Helper: Safely format temperature values
     function getTempAt(arr, index) {
       if (!arr || index === undefined || index < 0 || index >= arr.length) return '--';
@@ -414,7 +489,18 @@
       if (!data) return { btArr: [], etArr: [] };
       const t1 = data.temp1 || [];
       const t2 = data.temp2 || [];
-      return { btArr: t2, etArr: t1 };
+      
+      // If temp2 has data, standard Artisan layout (temp2=BT, temp1=ET)
+      if (t2 && t2.length > 0) {
+        return { btArr: t2, etArr: t1 };
+      }
+      // Fallback: If only temp1 exists, use temp1 as BT
+      return { btArr: t1, etArr: [] };
+    }
+
+    // Utility: Format Seconds to MM:SS
+    function formatTime(seconds) {
+
     }
 
     // Utility: Format Seconds to MM:SS
@@ -582,9 +668,9 @@
         fcDropDeltaVal = `+${delta} °C`;
       }
 
-      // Metadata cards render
+      const roasterName = data.roastertype || data.machinesetup || '通用烘焙機';
       const items = [
-        { label: '烘焙日期/時間', val: `${data.roastisodate || 'N/A'} ${data.roasttime || ''}`, icon: 'calendar', color: 'text-amber-600' },
+        { label: '烘焙日期 / 機型', val: `${data.roastisodate || 'N/A'} (${roasterName})`, icon: 'calendar', color: 'text-amber-600' },
         { label: '進豆溫 (Charge BT)', val: `${chargeBt} °C`, icon: 'arrow-down-circle', color: 'text-blue-700' },
         { label: '一爆後升溫 (FC ΔT)', val: fcDropDeltaVal, icon: 'trending-up', color: 'text-amber-600' },
         { label: '出豆溫 / 總時長', val: `${dropBt} °C (${formatTime(totalSec)})`, icon: 'flag', color: 'text-rose-600' }
@@ -882,24 +968,26 @@
       renderChart(data);
     }
 
-    // File Upload Handler
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       readFile(file);
+      fileInput.value = ''; // Reset input so same file can be re-opened
     });
 
     function readFile(file) {
       const reader = new FileReader();
       reader.onload = (evt) => {
         try {
-          let parsed = JSON.parse(evt.target.result);
+          const rawText = evt.target.result;
+          let parsed = parseArtisanContent(rawText);
+
           if (!parsed.timex && parsed.data && parsed.data.timex) {
             parsed = parsed.data;
           }
 
           if (!parsed.timex || !Array.isArray(parsed.timex)) {
-            alert('檔案格式不符：找不到有效的 timex 時間列，請確認為 Artisan 匯出的 .json 或 .alog 檔。');
+            showToast('檔案格式不符：找不到有效的 timex 時間列，請確認為 Artisan 繪出的 .json 或 .alog 檔。', 'error');
             return;
           }
 
@@ -909,11 +997,42 @@
           }
 
           loadData(parsed);
+          showToast(`成功載入烘焙資料：${file.name}`, 'success');
         } catch (err) {
-          alert('解析檔案失敗，請確保此檔案為有效的 Artisan JSON / alog 格式。');
+          showToast(err.message || '解析檔案失敗，請確認檔案格式。', 'error');
         }
       };
+      reader.onerror = () => {
+        showToast('讀取檔案失敗，請重新嘗試。', 'error');
+      };
       reader.readAsText(file);
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    if (dropZone) {
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.add('border-amber-500', 'bg-amber-50/50');
+        }, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          dropZone.classList.remove('border-amber-500', 'bg-amber-50/50');
+        }, false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          readFile(files[0]);
+        }
+      });
     }
 
     // Curve Visibility Toggles
