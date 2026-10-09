@@ -117,7 +117,7 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
     <!-- Roast Overview Metadata Grid -->
-    <div id="metadataContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+    <div id="metadataContainer" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
       <!-- Dynamic Metadata Cards Inserted Here -->
     </div>
 
@@ -363,6 +363,8 @@
       roastertype: "Diedrich IR-12 Pro",
       title: "埃塞俄比亞 耶加雪菲 G1 (Ethiopia Yirgacheffe)",
       beans: "Ethiopia Yirgacheffe Washed G1",
+      whole_color: 63,
+      ground_color: 76,
       timex: [0, 15, 30, 45, 60, 68, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360, 375, 390, 405, 420, 435, 450, 465, 480, 495, 510, 525, 535, 540, 555, 570, 585, 600, 615, 630],
       temp1: [200, 185, 172, 163, 156, 153, 153, 155, 158, 163, 169, 175, 181, 187, 193, 198, 203, 208, 212, 216, 220, 223, 226, 229, 231, 233, 235, 236, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 240, 240, 239, 238, 237, 236, 235], // ET
       temp2: [200, 160, 125, 105, 95, 92, 93, 98, 104, 111, 118, 126, 134, 142, 150, 157, 164, 170, 176, 181, 186, 190, 194, 198, 201, 204, 207, 210, 212, 214, 216, 218, 220, 221, 222, 223, 224, 225, 224, 223, 222, 221, 220, 218, 216], // BT
@@ -669,11 +671,18 @@
       }
 
       const roasterName = data.roastertype || data.machinesetup || '通用烘焙機';
+
+      // Agtron Whole / Ground Color Values Parsing
+      const beanAgtron = data.agtronbean ?? data.whole_color ?? data.color_whole ?? data.computed?.color_whole ?? '--';
+      const groundAgtron = data.agtronground ?? data.ground_color ?? data.color_ground ?? data.computed?.color_ground ?? '--';
+      const agtronVal = (beanAgtron !== '--' || groundAgtron !== '--') ? `${beanAgtron} / ${groundAgtron}` : '未紀錄';
+
       const items = [
         { label: '烘焙日期 / 機型', val: `${data.roastisodate || 'N/A'} (${roasterName})`, icon: 'calendar', color: 'text-amber-600' },
         { label: '進豆溫 (Charge BT)', val: `${chargeBt} °C`, icon: 'arrow-down-circle', color: 'text-blue-700' },
         { label: '一爆後升溫 (FC ΔT)', val: fcDropDeltaVal, icon: 'trending-up', color: 'text-amber-600' },
-        { label: '出豆溫 / 總時長', val: `${dropBt} °C (${formatTime(totalSec)})`, icon: 'flag', color: 'text-rose-600' }
+        { label: '出豆溫 / 總時長', val: `${dropBt} °C (${formatTime(totalSec)})`, icon: 'flag', color: 'text-rose-600' },
+        { label: 'Agtron 豆表 / 粉值', val: agtronVal, icon: 'palette', color: 'text-amber-700' }
       ];
 
       metadataContainer.innerHTML = items.map(item => `
