@@ -813,7 +813,7 @@
         data: {
           datasets: [
             {
-              label: 'ＢＴ　',
+              label: '豆溫 (BT)',
               data: btPoints,
               borderColor: '#1d4ed8',
               backgroundColor: 'rgba(29, 78, 216, 0.08)',
@@ -825,7 +825,7 @@
               hidden: !visibleCurves.bt
             },
             {
-              label: 'ＥＴ　',
+              label: '風溫 (ET)',
               data: etPoints,
               borderColor: '#dc2626',
               backgroundColor: 'transparent',
@@ -837,20 +837,7 @@
               hidden: !visibleCurves.et
             },
             {
-              label: 'ＲＯＲ',
-              data: rorPoints,
-              borderColor: '#0284c7',
-              backgroundColor: 'rgba(56, 189, 248, 0.12)',
-              borderWidth: 2.5,
-              tension: 0.45,
-              cubicInterpolationMode: 'monotone',
-              pointRadius: 0,
-              pointHoverRadius: 5,
-              yAxisID: 'ySecondary',
-              hidden: !visibleCurves.ror
-            },
-            {
-              label: '進風溫',
+              label: '進風溫 (Inlet)',
               data: inletPoints,
               borderColor: '#10b981',
               backgroundColor: 'transparent',
@@ -863,7 +850,20 @@
               hidden: !visibleCurves.inlet
             },
             {
-              label: '排風壓',
+              label: '升溫率 (BT RoR)',
+              data: rorPoints,
+              borderColor: '#0284c7',
+              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+              borderWidth: 2.5,
+              tension: 0.45,
+              cubicInterpolationMode: 'monotone',
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              yAxisID: 'ySecondary',
+              hidden: !visibleCurves.ror
+            },
+            {
+              label: '排風壓/風門',
               data: pressPoints,
               borderColor: '#f59e0b',
               backgroundColor: 'transparent',
@@ -1045,13 +1045,60 @@
       if (currentData) renderChart(currentData);
     });
 
-    // Image PNG Export
+    // Image PNG Export (White Background & Title Header Included)
     btnExportPNG.addEventListener('click', () => {
-      if (!chartInstance) return;
-      const url = chartInstance.toBase64Image('image/png', 1.0);
+      if (!chartInstance || !chartInstance.canvas) return;
+
+      const sourceCanvas = chartInstance.canvas;
+      const titleText = document.getElementById('chartFileTitle')?.innerText || currentData?.title || 'Roast Profile';
+      const dateText = currentData?.roastisodate ? `日期: ${currentData.roastisodate}` : '';
+      const roasterText = currentData?.roastertype ? `機型: ${currentData.roastertype}` : '';
+      const subtitleText = [dateText, roasterText].filter(Boolean).join('  |  ');
+
+      const headerHeight = 75;
+      const padding = 24;
+
+      // Create an offscreen canvas with white background
+      const exportCanvas = document.createElement('canvas');
+      exportCanvas.width = sourceCanvas.width;
+      exportCanvas.height = sourceCanvas.height + headerHeight;
+
+      const ctx = exportCanvas.getContext('2d');
+
+      // 1. Fill entire background with solid white
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+      // 2. Render File Title
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'bold 20px "Plus Jakarta Sans", "Noto Sans TC", sans-serif';
+      ctx.fillText(titleText, padding, 34);
+
+      // Render Subtitle Info (Date / Machine Setup)
+      if (subtitleText) {
+        ctx.fillStyle = '#64748b';
+        ctx.font = '13px "Plus Jakarta Sans", "Noto Sans TC", sans-serif';
+        ctx.fillText(subtitleText, padding, 58);
+      }
+
+      // Render App Branding on Top-Right
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#d97706';
+      ctx.font = 'bold 14px "Plus Jakarta Sans", "Noto Sans TC", sans-serif';
+      ctx.fillText('Artisan Scope Viewer', exportCanvas.width - padding, 34);
+
+      // Reset alignment back to left for canvas safety
+      ctx.textAlign = 'left';
+
+      // 3. Draw Main Chart Content below header
+      ctx.drawImage(sourceCanvas, 0, headerHeight);
+
+      // 4. Download Exported Image
+      const sanitizeFilename = titleText.replace(/[/\\?%*:|"<>]/g, '_').trim() || 'Artisan_Roast_Chart';
+      const url = exportCanvas.toDataURL('image/png', 1.0);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `Artisan_Roast_Chart_${currentData?.roastisodate || 'export'}.png`;
+      a.download = `${sanitizeFilename}.png`;
       a.click();
     });
 
