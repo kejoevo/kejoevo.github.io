@@ -45,13 +45,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
 
-  <!-- PWA & Mobile Web App Meta Tags -->
-  <meta name="theme-color" content="#d97706">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Artisan Scope">
-
   <!-- Custom Styles -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
@@ -99,13 +92,6 @@
 
       <!-- Quick Action Buttons Header -->
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- PWA Install Button -->
-        <button id="btnInstallPWA" class="hidden items-center gap-1.5 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg cursor-pointer shadow-md transition-all active:scale-95">
-          <i data-lucide="download" class="w-4 h-4"></i>
-          <span class="hidden sm:inline">安裝 App / 建立捷徑</span>
-          <span class="sm:hidden">安裝 App</span>
-        </button>
-
         <label for="fileInput" class="flex items-center gap-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-lg cursor-pointer shadow-md transition-all active:scale-95">
           <i data-lucide="upload" class="w-4 h-4"></i>
           <span>開啟檔案</span>
@@ -251,46 +237,6 @@
     </div>
   </main>
 
-  <!-- PWA Installation Guide Modal for Mobile / Android -->
-  <div id="pwaInstallModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-4 relative animate-in fade-in zoom-in duration-200">
-      <button id="btnClosePwaModal" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg">
-        <i data-lucide="x" class="w-5 h-5"></i>
-      </button>
-
-      <div class="flex items-center space-x-3">
-        <div class="p-3 bg-amber-100 text-amber-700 rounded-xl">
-          <i data-lucide="smartphone" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <h3 class="text-base font-bold text-slate-800">安裝 App 或建立桌面捷徑</h3>
-          <p class="text-xs text-slate-500">將 Artisan Scope Viewer 新增至 Android 主畫面</p>
-        </div>
-      </div>
-
-      <div class="space-y-3 text-xs text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-200">
-        <div class="flex items-start space-x-2.5">
-          <span class="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center shrink-0 font-bold text-[10px]">1</span>
-          <span>點擊 Android 瀏覽器右上角選單 <strong class="text-slate-800">「⋮」</strong> 或 <strong class="text-slate-800">分享</strong> 圖示。</span>
-        </div>
-        <div class="flex items-start space-x-2.5">
-          <span class="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center shrink-0 font-bold text-[10px]">2</span>
-          <span>點選 <strong class="text-slate-800">「安裝應用程式」</strong> 或 <strong class="text-slate-800">「新增至主畫面」</strong> (Add to Home screen)。</span>
-        </div>
-        <div class="flex items-start space-x-2.5">
-          <span class="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center shrink-0 font-bold text-[10px]">3</span>
-          <span>確認名稱後點擊「新增」，即可從手機桌面像 App 一樣隨時開啟！</span>
-        </div>
-      </div>
-
-      <div class="flex justify-end pt-2">
-        <button id="btnPwaModalConfirm" class="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-medium rounded-xl text-xs transition-all shadow-md active:scale-95">
-          我知道了
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
     /* Default Artisan Sample Data Object */
     const SAMPLE_ARTISAN_DATA = {
@@ -328,119 +274,6 @@
       ror: true,
       pressure: true
     };
-
-    // PWA & Android Shortcut Installation Logic
-    let deferredPrompt = null;
-    const btnInstallPWA = document.getElementById('btnInstallPWA');
-    const pwaInstallModal = document.getElementById('pwaInstallModal');
-    const btnClosePwaModal = document.getElementById('btnClosePwaModal');
-    const btnPwaModalConfirm = document.getElementById('btnPwaModalConfirm');
-
-    // 1. Dynamic Web App Manifest Injection with Base64 App Icon
-    function setupPWAManifest() {
-      try {
-        const iconCanvas = document.createElement('canvas');
-        iconCanvas.width = 192;
-        iconCanvas.height = 192;
-        const ctx = iconCanvas.getContext('2d');
-        ctx.fillStyle = '#d97706';
-        ctx.beginPath();
-        if (ctx.roundRect) ctx.roundRect(0, 0, 192, 192, 40);
-        else ctx.rect(0, 0, 192, 192);
-        ctx.fill();
-        ctx.fillStyle = '#ffffff';
-        ctx.font = 'bold 90px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('☕', 96, 96);
-        const iconUrl = iconCanvas.toDataURL('image/png');
-
-        const manifest = {
-          name: "Artisan Scope Viewer",
-          short_name: "Artisan Scope",
-          description: "專業級咖啡烘焙曲線數據分析儀",
-          start_url: window.location.href,
-          display: "standalone",
-          background_color: "#f1f5f9",
-          theme_color: "#d97706",
-          icons: [
-            { src: iconUrl, sizes: "192x192", type: "image/png" },
-            { src: iconUrl, sizes: "512x512", type: "image/png" }
-          ]
-        };
-
-        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-        const manifestLink = document.createElement('link');
-        manifestLink.rel = 'manifest';
-        manifestLink.href = URL.createObjectURL(manifestBlob);
-        document.head.appendChild(manifestLink);
-      } catch (err) {
-        console.warn('PWA Manifest setup note:', err);
-      }
-    }
-
-    // 2. Service Worker Registration
-    function registerSW() {
-      if ('serviceWorker' in navigator) {
-        try {
-          const swCode = `
-            self.addEventListener('install', (e) => self.skipWaiting());
-            self.addEventListener('activate', (e) => self.clients.claim());
-            self.addEventListener('fetch', (e) => {});
-          `;
-          const swBlob = new Blob([swCode], { type: 'text/javascript' });
-          navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-        } catch (e) {}
-      }
-    }
-
-    // 3. Listen for Android native PWA install prompt
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (btnInstallPWA) {
-        btnInstallPWA.classList.remove('hidden');
-        btnInstallPWA.classList.add('flex');
-      }
-    });
-
-    // 4. Handle Install Button Interaction
-    if (btnInstallPWA) {
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      if (isMobile) {
-        btnInstallPWA.classList.remove('hidden');
-        btnInstallPWA.classList.add('flex');
-      }
-
-      btnInstallPWA.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            btnInstallPWA.classList.add('hidden');
-          }
-          deferredPrompt = null;
-        } else {
-          if (pwaInstallModal) pwaInstallModal.classList.remove('hidden');
-        }
-      });
-    }
-
-    if (btnClosePwaModal) {
-      btnClosePwaModal.addEventListener('click', () => pwaInstallModal.classList.add('hidden'));
-    }
-    if (btnPwaModalConfirm) {
-      btnPwaModalConfirm.addEventListener('click', () => pwaInstallModal.classList.add('hidden'));
-    }
-
-    window.addEventListener('appinstalled', () => {
-      if (btnInstallPWA) btnInstallPWA.classList.add('hidden');
-      deferredPrompt = null;
-    });
-
-    // Initialize PWA setup
-    setupPWAManifest();
-    registerSW();
 
     // DOM Elements
     const fileInput = document.getElementById('fileInput');
@@ -618,11 +451,21 @@
       const fcBt = (fcIdx >= 0 && getTempAt(btArr, fcIdx) !== '--') ? getTempAt(btArr, fcIdx) : (computed.FCs_BT || '--');
       const dropBt = getTempAt(btArr, dropIdx) !== '--' ? getTempAt(btArr, dropIdx) : (computed.DROP_BT || '--');
 
+      // Calculate FC to Drop Temperature Rise Delta
+      let fcDropDeltaVal = '未紀錄';
+      if (fcIdx >= 0 && btArr[fcIdx] !== undefined && btArr[dropIdx] !== undefined && fcSec > 0) {
+        const delta = (btArr[dropIdx] - btArr[fcIdx]).toFixed(1);
+        fcDropDeltaVal = `+${delta} °C`;
+      } else if (computed.DROP_BT !== undefined && computed.FCs_BT !== undefined) {
+        const delta = (computed.DROP_BT - computed.FCs_BT).toFixed(1);
+        fcDropDeltaVal = `+${delta} °C`;
+      }
+
       // Metadata cards render
       const items = [
         { label: '烘焙日期/時間', val: `${data.roastisodate || 'N/A'} ${data.roasttime || ''}`, icon: 'calendar', color: 'text-amber-600' },
         { label: '進豆溫 (Charge BT)', val: `${chargeBt} °C`, icon: 'arrow-down-circle', color: 'text-blue-700' },
-        { label: '一爆點 (FCs BT)', val: fcSec > 0 ? `${fcBt} °C @ ${formatTime(fcSec)}` : '未紀錄', icon: 'zap', color: 'text-amber-600' },
+        { label: '一爆後升溫 (FC ΔT)', val: fcDropDeltaVal, icon: 'trending-up', color: 'text-amber-600' },
         { label: '出豆溫 / 總時長', val: `${dropBt} °C (${formatTime(totalSec)})`, icon: 'flag', color: 'text-rose-600' }
       ];
 
@@ -723,11 +566,11 @@
 
       // Key Events Annotations setup
       const eventDefs = [
-        { name: 'Charge (進豆)', idx: chargeIdx, color: '#1d4ed8' },
-        { name: 'TP (回溫點)', idx: tpIdx, color: '#2563eb' },
-        { name: 'Dry End (黃化)', idx: dryIdx, color: '#d97706' },
-        { name: 'FCs (一爆)', idx: fcIdx, color: '#dc2626' },
-        { name: 'Drop (出豆)', idx: dropIdx, color: '#7c3aed' }
+        { name: 'Charge', idx: chargeIdx, color: '#1d4ed8' },
+        { name: 'TP', idx: tpIdx, color: '#2563eb' },
+        { name: 'Dry End', idx: dryIdx, color: '#d97706' },
+        { name: 'FCs', idx: fcIdx, color: '#dc2626' },
+        { name: 'Drop', idx: dropIdx, color: '#7c3aed' }
       ];
 
       const annotations = {};
