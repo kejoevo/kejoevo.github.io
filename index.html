@@ -2,7 +2,12 @@
 <html lang="zh-TW" class="h-full bg-slate-100 text-slate-800">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#d97706">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Artisan Scope">
+  
   <title>Artisan Scope Viewer - 咖啡烘焙數據分析儀</title>
   
   <!-- Tailwind CSS -->
@@ -50,11 +55,12 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
     .glass-panel {
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(203, 213, 225, 0.6);
+      border: 1px solid rgba(203, 213, 225, 0.7);
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -75,24 +81,31 @@
 <body class="h-full flex flex-col overflow-x-hidden custom-scrollbar bg-slate-100 text-slate-800">
 
   <!-- Top Navigation Header -->
-  <header class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="p-2 bg-amber-600 rounded-xl shadow-md text-white">
-          <i data-lucide="coffee" class="w-6 h-6"></i>
+  <header class="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <div class="p-2 bg-amber-600 rounded-xl shadow-md text-white flex-shrink-0">
+          <i data-lucide="coffee" class="w-5 h-5 sm:w-6 sm:h-6"></i>
         </div>
-        <div>
-          <h1 class="font-bold text-lg text-slate-800 leading-tight tracking-wide flex items-center gap-2">
-            Artisan Scope Viewer
-            <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal">v2.6 Light Pro</span>
+        <div class="truncate">
+          <h1 class="font-bold text-base sm:text-lg text-slate-800 leading-tight tracking-wide flex items-center gap-2 truncate">
+            <span class="truncate">Artisan Scope Viewer</span>
+            <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal hidden sm:inline-block">v2.6 Light Pro</span>
           </h1>
-          <p class="text-xs text-slate-500">專業級咖啡烘焙曲線數據分析儀</p>
+          <p class="text-[11px] sm:text-xs text-slate-500 truncate">專業級咖啡烘焙曲線數據分析儀</p>
         </div>
       </div>
 
       <!-- Quick Action Buttons Header -->
-      <div class="flex items-center space-x-2 sm:space-x-3">
-        <label for="fileInput" class="flex items-center gap-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-lg cursor-pointer shadow-md transition-all active:scale-95">
+      <div class="flex items-center space-x-2">
+        <!-- Android Install App / Create Shortcut Button -->
+        <button id="btnInstallApp" class="flex items-center gap-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-xl shadow-md transition-all active:scale-95">
+          <i data-lucide="smartphone" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">安裝 App / 建立捷徑</span>
+          <span class="sm:hidden">安裝 App</span>
+        </button>
+
+        <label for="fileInput" class="flex items-center gap-1.5 text-xs font-medium bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-xl cursor-pointer shadow-md transition-all active:scale-95">
           <i data-lucide="upload" class="w-4 h-4"></i>
           <span>開啟檔案</span>
           <input type="file" id="fileInput" accept=".json,.alog" class="hidden">
@@ -101,75 +114,75 @@
     </div>
   </header>
 
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
 
     <!-- Roast Overview Metadata Grid -->
-    <div id="metadataContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div id="metadataContainer" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
       <!-- Dynamic Metadata Cards Inserted Here -->
     </div>
 
     <!-- Chart Container & Toolbar -->
-    <div class="glass-panel rounded-2xl p-4 sm:p-6 shadow-xl relative space-y-4">
+    <div class="glass-panel rounded-2xl p-3.5 sm:p-6 shadow-xl relative space-y-3 sm:space-y-4">
       
       <!-- Loaded File Title Banner -->
-      <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-200">
+      <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200">
         <div class="flex items-center gap-2 min-w-0">
-          <div class="p-1.5 bg-amber-100 border border-amber-200 rounded-lg text-amber-700">
+          <div class="p-1.5 bg-amber-100 border border-amber-200 rounded-lg text-amber-700 flex-shrink-0">
             <i data-lucide="file-code" class="w-4 h-4"></i>
           </div>
-          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">檔案名稱：</span>
-          <h2 id="chartFileTitle" class="text-sm sm:text-base font-bold text-slate-800 truncate">
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider hidden sm:inline">檔案名稱：</span>
+          <h2 id="chartFileTitle" class="text-xs sm:text-base font-bold text-slate-800 truncate">
             Ethiopia_Yirgacheffe_G1.json
           </h2>
         </div>
       </div>
 
       <!-- Chart Control Bar -->
-      <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div class="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-slate-200">
         
         <!-- Dataset Visibility Toggles -->
-        <div class="flex flex-wrap items-center gap-2" id="curveToggles">
-          <button data-target="bt" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-blue-300 bg-blue-50 text-blue-900 font-medium transition-all shadow-sm">
+        <div class="flex flex-wrap items-center gap-1.5 sm:gap-2" id="curveToggles">
+          <button data-target="bt" class="toggle-btn flex items-center gap-1.5 text-[11px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-blue-300 bg-blue-50 text-blue-900 font-medium transition-all shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-blue-700 inline-block"></span> 豆溫 (BT)
           </button>
-          <button data-target="et" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-red-300 bg-red-50 text-red-900 font-medium transition-all shadow-sm">
+          <button data-target="et" class="toggle-btn flex items-center gap-1.5 text-[11px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-red-300 bg-red-50 text-red-900 font-medium transition-all shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-red-600 inline-block"></span> 風溫 (ET)
           </button>
-          <button data-target="inlet" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 font-medium transition-all shadow-sm">
+          <button data-target="inlet" class="toggle-btn flex items-center gap-1.5 text-[11px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-900 font-medium transition-all shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> 進風溫
           </button>
-          <button data-target="ror" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-sky-300 bg-sky-50 text-sky-900 font-medium transition-all shadow-sm">
+          <button data-target="ror" class="toggle-btn flex items-center gap-1.5 text-[11px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-sky-300 bg-sky-50 text-sky-900 font-medium transition-all shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span> 升溫率 (RoR)
           </button>
-          <button data-target="pressure" class="toggle-btn flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 font-medium transition-all shadow-sm">
+          <button data-target="pressure" class="toggle-btn flex items-center gap-1.5 text-[11px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-amber-300 bg-amber-50 text-amber-900 font-medium transition-all shadow-sm">
             <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> 排風壓
           </button>
         </div>
 
         <!-- Export Options -->
         <div class="flex items-center gap-2 ml-auto">
-          <button id="btnExportPNG" class="flex items-center gap-1 text-xs bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg transition-all shadow-sm" title="匯出圖表為高畫質 PNG">
+          <button id="btnExportPNG" class="flex items-center gap-1 text-xs bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-2.5 py-1.5 rounded-lg transition-all shadow-sm" title="匯出圖表為 PNG">
             <i data-lucide="image" class="w-3.5 h-3.5 text-amber-600"></i>
-            <span>匯出圖片</span>
+            <span class="hidden sm:inline">匯出圖片</span>
           </button>
 
-          <button id="btnExportCSV" class="flex items-center gap-1 text-xs bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg transition-all shadow-sm" title="下載烘焙數據 CSV 報表">
+          <button id="btnExportCSV" class="flex items-center gap-1 text-xs bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 px-2.5 py-1.5 rounded-lg transition-all shadow-sm" title="下載 CSV 報表">
             <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-600"></i>
-            <span>匯出 CSV</span>
+            <span class="hidden sm:inline">匯出 CSV</span>
           </button>
         </div>
       </div>
 
       <!-- Main Canvas Aspect Container -->
-      <div class="relative w-full h-[450px] sm:h-[520px] lg:h-[580px]">
+      <div class="relative w-full h-[380px] sm:h-[500px] lg:h-[560px]">
         <canvas id="roastChart"></canvas>
       </div>
     </div>
 
     <!-- Roast Phases Development Analysis -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
       <!-- Stage Breakdown Progress Bar -->
-      <div class="lg:col-span-2 glass-panel rounded-2xl p-5 space-y-4 shadow-xl">
+      <div class="lg:col-span-2 glass-panel rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl">
         <h3 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
           <i data-lucide="pie-chart" class="w-4 h-4 text-amber-600"></i>
           烘焙階段時間比例 (Roast Phase Development)
@@ -189,27 +202,27 @@
         </div>
 
         <!-- Detailed Phase Table -->
-        <div class="grid grid-cols-3 gap-3 text-center text-xs">
-          <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center text-xs">
+          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl">
             <span class="text-amber-700 font-medium block">脫水期 (Dry)</span>
-            <span id="dryTimeVal" class="text-base font-bold text-slate-800 block mt-0.5">--:--</span>
-            <span id="dryRatioVal" class="text-[11px] text-slate-500">0.0%</span>
+            <span id="dryTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+            <span id="dryRatioVal" class="text-[10px] sm:text-[11px] text-slate-500">0.0%</span>
           </div>
-          <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
-            <span class="text-orange-700 font-medium block">梅納期 (Mid/Maillard)</span>
-            <span id="midTimeVal" class="text-base font-bold text-slate-800 block mt-0.5">--:--</span>
-            <span id="midRatioVal" class="text-[11px] text-slate-500">0.0%</span>
+          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl">
+            <span class="text-orange-700 font-medium block">梅納期 (Maillard)</span>
+            <span id="midTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+            <span id="midRatioVal" class="text-[10px] sm:text-[11px] text-slate-500">0.0%</span>
           </div>
-          <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl">
-            <span class="text-rose-700 font-medium block">發展期 (Finish / DTR)</span>
-            <span id="devTimeVal" class="text-base font-bold text-slate-800 block mt-0.5">--:--</span>
-            <span id="devRatioVal" class="text-[11px] text-slate-500">0.0%</span>
+          <div class="bg-slate-50 border border-slate-200 p-2.5 sm:p-3 rounded-xl">
+            <span class="text-rose-700 font-medium block">發展期 (DTR)</span>
+            <span id="devTimeVal" class="text-sm sm:text-base font-bold text-slate-800 block mt-0.5">--:--</span>
+            <span id="devRatioVal" class="text-[10px] sm:text-[11px] text-slate-500">0.0%</span>
           </div>
         </div>
       </div>
 
-      <!-- Additional Roast Metrics Summary -->
-      <div class="glass-panel rounded-2xl p-5 space-y-3 shadow-xl">
+      <!-- Key Metrics Highlights -->
+      <div class="glass-panel rounded-2xl p-4 sm:p-5 space-y-3 shadow-xl">
         <h3 class="text-sm font-semibold text-slate-800 flex items-center gap-2">
           <i data-lucide="gauge" class="w-4 h-4 text-emerald-600"></i>
           關鍵指標統計 (Key Highlights)
@@ -229,7 +242,7 @@
             <span id="statTPVal" class="font-semibold text-blue-800">-- °C / --:--</span>
           </div>
           <div class="flex justify-between items-center py-1.5">
-            <span class="text-slate-500">總溫升ΔT (Drop - Charge):</span>
+            <span class="text-slate-500">總溫升 ΔT (Drop - Charge):</span>
             <span id="statTotalDeltaT" class="font-semibold text-rose-700">-- °C</span>
           </div>
         </div>
@@ -237,7 +250,108 @@
     </div>
   </main>
 
+  <!-- PWA Android Install & Shortcut Modal -->
+  <div id="pwaInstallModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-100 animate-in fade-in zoom-in duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-emerald-100 text-emerald-700 rounded-xl">
+            <i data-lucide="smartphone" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">安裝至 Android 桌面</h3>
+            <p class="text-xs text-slate-500">快速建立應用程式捷徑</p>
+          </div>
+        </div>
+        <button id="btnCloseInstallModal" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-xs text-slate-600 leading-relaxed">
+        <div id="pwaDirectTriggerBox" class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2 hidden">
+          <p class="font-semibold text-emerald-800 flex items-center gap-1.5 text-xs">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+            您的裝置支援一鍵原生成捷徑！
+          </p>
+          <button id="btnTriggerPWA" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all shadow-md active:scale-95 text-xs">
+            立即新增至 Android 主畫面
+          </button>
+        </div>
+
+        <div class="space-y-2.5 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+          <p class="font-bold text-slate-700">若為 Chrome 瀏覽器手動安裝步驟：</p>
+          <ol class="list-decimal list-inside space-y-2 text-slate-600">
+            <li>點擊 Chrome 瀏覽器右上角的選單圖示 <strong class="text-slate-800">「⋮」</strong></li>
+            <li>選擇 <strong class="text-slate-800">「加到主螢幕」</strong> 或 <strong class="text-slate-800">「安裝應用程式」</strong></li>
+            <li>若在選單找不到，請點擊 <strong class="text-slate-800">「分享...」</strong> ➔ <strong class="text-slate-800">「加到主畫面」</strong></li>
+          </ol>
+        </div>
+
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-[11px] space-y-1">
+          <p class="font-bold flex items-center gap-1">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            從 LINE / 微信等 App 開啟時：
+          </p>
+          <p>請先點選右上角 <strong class="underline">「⋮」➔「以 Chrome 瀏覽器開啟」</strong>，再進行安裝操作。</p>
+        </div>
+      </div>
+
+      <div class="pt-2 flex justify-end">
+        <button id="btnCloseModalBtn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-xs transition-all">
+          我知道了
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    // Dynamic PWA Web App Manifest Registration
+    (function injectPWAManifest() {
+      const manifest = {
+        name: "Artisan Scope Viewer",
+        short_name: "Artisan Scope",
+        description: "專業級咖啡烘焙曲線數據分析儀",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#f1f5f9",
+        theme_color: "#d97706",
+        icons: [
+          {
+            src: "https://placehold.co/192x192/d97706/ffffff?text=Artisan",
+            sizes: "192x192",
+            type: "image/png"
+          },
+          {
+            src: "https://placehold.co/512x512/d97706/ffffff?text=Artisan",
+            sizes: "512x512",
+            type: "image/png"
+          }
+        ]
+      };
+      const stringManifest = JSON.stringify(manifest);
+      const blob = new Blob([stringManifest], { type: 'application/json' });
+      const manifestUrl = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manifestUrl;
+      document.head.appendChild(link);
+    })();
+
+    // Register dummy Service Worker via Blob for PWA eligibility
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const swContent = `
+          self.addEventListener('install', (e) => self.skipWaiting());
+          self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+          self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));
+        `;
+        const blob = new Blob([swContent], { type: 'text/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch(() => {});
+      });
+    }
+
     /* Default Artisan Sample Data Object */
     const SAMPLE_ARTISAN_DATA = {
       roastisodate: "2024-03-30",
@@ -245,17 +359,17 @@
       roastertype: "Diedrich IR-12 Pro",
       title: "埃塞俄比亞 耶加雪菲 G1 (Ethiopia Yirgacheffe)",
       beans: "Ethiopia Yirgacheffe Washed G1",
-      timex: [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360, 375, 390, 405, 420, 435, 450, 465, 480, 495, 510, 525, 540, 555, 570, 585, 600, 615, 630, 645],
-      temp1: [200, 185, 172, 163, 156, 153, 155, 158, 163, 169, 175, 181, 187, 193, 198, 203, 208, 212, 216, 220, 223, 226, 229, 231, 233, 235, 236, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 240, 240, 239, 238, 237, 236, 235], // ET (Env Temp)
-      temp2: [200, 160, 125, 105, 95, 92, 94, 98, 104, 111, 118, 126, 134, 142, 150, 157, 164, 170, 176, 181, 186, 190, 194, 198, 201, 204, 207, 210, 212, 214, 216, 218, 220, 221, 222, 223, 224, 224, 223, 222, 221, 220, 218, 216], // BT (Bean Temp)
-      timeindex: [4, 18, 30, 43], // Standard Artisan mapping: Index 0: Charge, Index 1: Dry End, Index 2: FCs, Index 3: Drop
+      timex: [0, 15, 30, 45, 60, 68, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300, 315, 330, 345, 360, 375, 390, 405, 420, 435, 450, 465, 480, 495, 510, 525, 535, 540, 555, 570, 585, 600, 615, 630],
+      temp1: [200, 185, 172, 163, 156, 153, 153, 155, 158, 163, 169, 175, 181, 187, 193, 198, 203, 208, 212, 216, 220, 223, 226, 229, 231, 233, 235, 236, 237, 238, 238, 239, 239, 240, 240, 241, 241, 241, 240, 240, 239, 238, 237, 236, 235], // ET
+      temp2: [200, 160, 125, 105, 95, 92, 93, 98, 104, 111, 118, 126, 134, 142, 150, 157, 164, 170, 176, 181, 186, 190, 194, 198, 201, 204, 207, 210, 212, 214, 216, 218, 220, 221, 222, 223, 224, 225, 224, 223, 222, 221, 220, 218, 216], // BT
+      timeindex: [0, 19, 32, 0, 0, 0, 37], // 0: Charge, 1: Dry End, 2: FCs, 6: Drop (at 535s = 8m55s)
       computed: {
         CHARGE_BT: 200,
         TP_BT: 92,
-        TP_TIME: 75,
-        DRY_BT: 186,
-        FCs_BT: 220,
-        DROP_BT: 216
+        TP_TIME: 68,
+        DRY_BT: 181,
+        FCs_BT: 218,
+        DROP_BT: 225
       },
       extratemp1: [
         [220, 210, 200, 195, 190, 192, 198, 205, 212, 220, 228, 235, 240, 245, 248, 250, 250, 248, 245, 240, 235, 230, 225, 220, 215, 210, 205, 200, 195, 190, 185, 180, 175, 170, 165, 160, 155, 150, 145, 140, 135, 130, 125, 120],
@@ -266,7 +380,8 @@
     // Global State Variables
     let currentData = null;
     let chartInstance = null;
-    const rorSmoothWindow = 9; // Strong RoR smoothing filter
+    let deferredPrompt = null;
+    const rorSmoothWindow = 9;
     let visibleCurves = {
       bt: true,
       et: true,
@@ -280,6 +395,12 @@
     const metadataContainer = document.getElementById('metadataContainer');
     const btnExportPNG = document.getElementById('btnExportPNG');
     const btnExportCSV = document.getElementById('btnExportCSV');
+    const btnInstallApp = document.getElementById('btnInstallApp');
+    const pwaInstallModal = document.getElementById('pwaInstallModal');
+    const btnCloseInstallModal = document.getElementById('btnCloseInstallModal');
+    const btnCloseModalBtn = document.getElementById('btnCloseModalBtn');
+    const btnTriggerPWA = document.getElementById('btnTriggerPWA');
+    const pwaDirectTriggerBox = document.getElementById('pwaDirectTriggerBox');
 
     // Helper: Safely format temperature values
     function getTempAt(arr, index) {
@@ -291,8 +412,8 @@
     // Standard Artisan mapping: temp2 = BT (Bean Temp), temp1 = ET (Env Temp)
     function getBtEtArrays(data) {
       if (!data) return { btArr: [], etArr: [] };
-      const t1 = data.temp1 || []; // Environment Temperature (ET)
-      const t2 = data.temp2 || []; // Bean Temperature (BT)
+      const t1 = data.temp1 || [];
+      const t2 = data.temp2 || [];
       return { btArr: t2, etArr: t1 };
     }
 
@@ -307,9 +428,7 @@
       return isNegative ? `-${formatted}` : formatted;
     }
 
-    // Helper to accurately parse Artisan Event Indices according to standard Artisan specifications
     // Artisan timeindex standard: [0: Charge, 1: Dry End, 2: FCs, 3: FCe, 4: SCs, 5: SCe, 6: Drop]
-    // Turning Point (TP) is calculated as the minimum BT point after Charge.
     function parseArtisanEvents(data) {
       if (!data) return { chargeIdx: 0, tpIdx: 0, dryIdx: -1, fcIdx: -1, dropIdx: 0 };
       
@@ -329,23 +448,22 @@
         chargeIdx = timeIdx[0];
       }
 
-      // 2. Dry End / 黃化 (timeindex[1] in standard Artisan)
+      // 2. Dry End (timeindex[1])
       if (timeIdx.length > 1 && timeIdx[1] > 0 && timeIdx[1] < timeArr.length) {
         dryIdx = timeIdx[1];
       }
 
-      // 3. FCs / 一爆開始 (timeindex[2] in standard Artisan)
+      // 3. FCs (timeindex[2])
       if (timeIdx.length > 2 && timeIdx[2] > 0 && timeIdx[2] < timeArr.length) {
         fcIdx = timeIdx[2];
       }
 
-      // 4. Drop Index / 出豆
+      // 4. Drop Index
       if (timeIdx.length >= 7 && timeIdx[6] > 0 && timeIdx[6] < timeArr.length) {
         dropIdx = timeIdx[6];
       } else if (timeIdx.length >= 5 && timeIdx[4] > 0 && timeIdx[4] < timeArr.length && timeIdx.length < 7) {
         dropIdx = timeIdx[4];
       } else {
-        // Fallback: search highest valid non-zero entry in timeindex
         for (let i = timeIdx.length - 1; i >= 0; i--) {
           if (timeIdx[i] > chargeIdx && timeIdx[i] < timeArr.length) {
             dropIdx = timeIdx[i];
@@ -355,7 +473,6 @@
       }
 
       // 5. Turning Point (TP) Index
-      // Check computed.TP_TIME or computed.TP_BT
       if (computed.TP_TIME !== undefined && computed.TP_TIME !== null) {
         const tpSec = computed.TP_TIME;
         let minDiff = Infinity;
@@ -368,7 +485,7 @@
         }
       }
 
-      // Fallback: Search for minimum BT value in the window between Charge and Dry End (or 2.5 mins post-charge)
+      // Fallback TP search: Find minimum BT between Charge and Dry End
       if (tpIdx < 0 || tpIdx <= chargeIdx) {
         let minTemp = Infinity;
         let minI = chargeIdx;
@@ -385,7 +502,7 @@
       return { chargeIdx, tpIdx, dryIdx, fcIdx, dropIdx };
     }
 
-    // RoR Calculation with Moving Average Filtering
+    // RoR Calculation with Despiking + Moving Average
     function calculateRoR(timeArr, tempArr, windowSize = 9) {
       if (!timeArr || !tempArr || timeArr.length !== tempArr.length || tempArr.length < 2) return [];
       
@@ -394,25 +511,33 @@
         if (i === 0) {
           rawRor.push(0);
         } else {
-          const dt = (timeArr[i] - timeArr[i - 1]) / 60; // minutes
+          const dt = (timeArr[i] - timeArr[i - 1]) / 60;
           const dTemp = tempArr[i] - tempArr[i - 1];
           const rate = (dt > 0 && dTemp !== undefined && !isNaN(dTemp)) ? (dTemp / dt) : 0;
           rawRor.push(rate);
         }
       }
 
-      if (windowSize <= 1) {
-        return rawRor.map(r => Math.max(-10, Math.min(35, parseFloat(r.toFixed(1)))));
+      // Despiking Filter (Hampel Filter)
+      const despiked = [...rawRor];
+      for (let i = 1; i < despiked.length - 1; i++) {
+        const prev = despiked[i - 1];
+        const curr = despiked[i];
+        const next = despiked[i + 1];
+        const median = (prev + curr + next) / 3;
+        if (Math.abs(curr - median) > 5) {
+          despiked[i] = median;
+        }
       }
 
       const smoothed = [];
       const halfWin = Math.floor(windowSize / 2);
 
-      for (let i = 0; i < rawRor.length; i++) {
+      for (let i = 0; i < despiked.length; i++) {
         let sum = 0;
         let count = 0;
-        for (let j = Math.max(0, i - halfWin); j <= Math.min(rawRor.length - 1, i + halfWin); j++) {
-          sum += rawRor[j];
+        for (let j = Math.max(0, i - halfWin); j <= Math.min(despiked.length - 1, i + halfWin); j++) {
+          sum += despiked[j];
           count++;
         }
         let avg = count > 0 ? (sum / count) : 0;
@@ -428,10 +553,8 @@
       const timeArr = data.timex || [];
       const { btArr } = getBtEtArrays(data);
       
-      // Parse event indices cleanly
       const { chargeIdx, tpIdx, dryIdx, fcIdx, dropIdx } = parseArtisanEvents(data);
 
-      // Timings relative to Charge (進豆為 0 秒)
       const chargeSec = timeArr[chargeIdx] || 0;
       const totalSec = Math.max(0, (timeArr[dropIdx] !== undefined ? timeArr[dropIdx] : timeArr[timeArr.length - 1]) - chargeSec);
       const drySec = (dryIdx >= 0 && timeArr[dryIdx] !== undefined) ? timeArr[dryIdx] - chargeSec : 0;
@@ -446,12 +569,10 @@
       const midPct = totalSec > 0 ? ((midDuration / totalSec) * 100).toFixed(1) : '0';
       const devPct = totalSec > 0 ? ((devDuration / totalSec) * 100).toFixed(1) : '0';
 
-      // Safe Temperature Extractions
       const chargeBt = getTempAt(btArr, chargeIdx) !== '--' ? getTempAt(btArr, chargeIdx) : (computed.CHARGE_BT || '--');
-      const fcBt = (fcIdx >= 0 && getTempAt(btArr, fcIdx) !== '--') ? getTempAt(btArr, fcIdx) : (computed.FCs_BT || '--');
       const dropBt = getTempAt(btArr, dropIdx) !== '--' ? getTempAt(btArr, dropIdx) : (computed.DROP_BT || '--');
 
-      // Calculate FC to Drop Temperature Rise Delta
+      // FC ΔT (Rise from FC to Drop)
       let fcDropDeltaVal = '未紀錄';
       if (fcIdx >= 0 && btArr[fcIdx] !== undefined && btArr[dropIdx] !== undefined && fcSec > 0) {
         const delta = (btArr[dropIdx] - btArr[fcIdx]).toFixed(1);
@@ -470,16 +591,15 @@
       ];
 
       metadataContainer.innerHTML = items.map(item => `
-        <div class="glass-panel p-3.5 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500 shadow-sm">
+        <div class="glass-panel p-3 sm:p-3.5 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500 shadow-sm">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] text-slate-500 font-medium">${item.label}</span>
-            <i data-lucide="${item.icon}" class="w-4 h-4 ${item.color}"></i>
+            <span class="text-[10px] sm:text-[11px] text-slate-500 font-medium">${item.label}</span>
+            <i data-lucide="${item.icon}" class="w-3.5 h-3.5 sm:w-4 sm:h-4 ${item.color}"></i>
           </div>
-          <div class="text-sm font-bold text-slate-800 mt-1 truncate" title="${item.val}">${item.val}</div>
+          <div class="text-xs sm:text-sm font-bold text-slate-800 mt-1 truncate" title="${item.val}">${item.val}</div>
         </div>
       `).join('');
 
-      // Refresh icons inside metadata
       lucide.createIcons();
 
       // Update Phase Bar Elements
@@ -493,15 +613,15 @@
       document.getElementById('phaseDevTxt').innerText = `發展 ${devPct}%`;
 
       document.getElementById('dryTimeVal').innerText = formatTime(dryDuration);
-      document.getElementById('dryRatioVal').innerText = `${dryPct}% 的總烘焙時間`;
+      document.getElementById('dryRatioVal').innerText = `${dryPct}% 總時間`;
 
       document.getElementById('midTimeVal').innerText = formatTime(midDuration);
-      document.getElementById('midRatioVal').innerText = `${midPct}% 的總烘焙時間`;
+      document.getElementById('midRatioVal').innerText = `${midPct}% 總時間`;
 
       document.getElementById('devTimeVal').innerText = formatTime(devDuration);
       document.getElementById('devRatioVal').innerText = `DTR: ${devPct}%`;
 
-      // Update Stats Highlights
+      // Stats Highlights
       const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
       const postChargeRor = rorArr.slice(chargeIdx);
       const maxRor = postChargeRor.length > 0 ? Math.max(...postChargeRor) : 0;
@@ -509,7 +629,6 @@
       
       const dropTempNum = btArr[dropIdx];
       const chargeTempNum = btArr[chargeIdx];
-      
       const totalDelta = (dropTempNum !== undefined && chargeTempNum !== undefined) 
         ? (dropTempNum - chargeTempNum).toFixed(1) 
         : '0.0';
@@ -522,7 +641,6 @@
       document.getElementById('statTotalDeltaT').innerText = `+${totalDelta} °C`;
     }
 
-    // Zip time and temperature values into {x: relative_minutes, y: temp} objects
     function zipData(timeArr, valArr, chargeSec = 0, hideBeforeCharge = false) {
       if (!timeArr || !valArr) return [];
       const len = Math.min(timeArr.length, valArr.length);
@@ -547,28 +665,24 @@
       const pressArr = (data.extratemp1 && data.extratemp1[1]) ? data.extratemp1[1] : [];
       const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
 
-      // Key Events & Charge baseline time
       const { chargeIdx, tpIdx, dryIdx, fcIdx, dropIdx } = parseArtisanEvents(data);
       const chargeSec = (chargeIdx < timeArr.length && timeArr[chargeIdx] !== undefined) ? timeArr[chargeIdx] : 0;
 
-      // Zipped Point Data for Linear Scale (relative to Charge)
       const btPoints = zipData(timeArr, btArr, chargeSec);
       const etPoints = zipData(timeArr, etArr, chargeSec);
       const inletPoints = zipData(timeArr, inletArr, chargeSec);
       const rorPoints = zipData(timeArr, rorArr, chargeSec, true);
       const pressPoints = zipData(timeArr, pressArr, chargeSec);
 
-      // Calculate relative bounds in minutes
       const minSec = timeArr.length > 0 ? timeArr[0] - chargeSec : 0;
       const maxSec = timeArr.length > 0 ? timeArr[timeArr.length - 1] - chargeSec : 600;
       const minMin = Math.floor(minSec / 60);
       const maxMin = Math.ceil(maxSec / 60);
 
-      // Key Events Annotations setup
       const eventDefs = [
         { name: 'Charge', idx: chargeIdx, color: '#1d4ed8' },
         { name: 'TP', idx: tpIdx, color: '#2563eb' },
-        { name: 'Dry End', idx: dryIdx, color: '#d97706' },
+        { name: 'DE', idx: dryIdx, color: '#d97706' },
         { name: 'FCs', idx: fcIdx, color: '#dc2626' },
         { name: 'Drop', idx: dropIdx, color: '#7c3aed' }
       ];
@@ -592,7 +706,7 @@
               display: true,
               content: `${evt.name}\n${labelVal}`,
               position: 'start',
-              backgroundColor: 'rgba(255, 255, 255, 0.9)',
+              backgroundColor: 'rgba(255, 255, 255, 0.92)',
               color: evt.color,
               font: { size: 10, weight: 'bold' },
               padding: 4,
@@ -615,7 +729,7 @@
             {
               label: '豆溫 (BT)',
               data: btPoints,
-              borderColor: '#1d4ed8', // Dark Blue
+              borderColor: '#1d4ed8',
               backgroundColor: 'rgba(29, 78, 216, 0.08)',
               borderWidth: 2.5,
               tension: tensionVal,
@@ -627,7 +741,7 @@
             {
               label: '風溫 (ET)',
               data: etPoints,
-              borderColor: '#dc2626', // Red
+              borderColor: '#dc2626',
               backgroundColor: 'transparent',
               borderWidth: 2,
               tension: tensionVal,
@@ -652,7 +766,7 @@
             {
               label: '升溫率 (BT RoR)',
               data: rorPoints,
-              borderColor: '#0284c7', // Light Blue / Sky Blue
+              borderColor: '#0284c7',
               backgroundColor: 'rgba(56, 189, 248, 0.12)',
               borderWidth: 2.5,
               tension: 0.45,
@@ -685,9 +799,7 @@
             intersect: false
           },
           plugins: {
-            legend: {
-              display: false
-            },
+            legend: { display: false },
             tooltip: {
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
               titleColor: '#0f172a',
@@ -732,13 +844,10 @@
               ticks: { 
                 color: '#475569', 
                 font: { size: 11 },
-                stepSize: 1, // Strict 1 minute intervals
+                stepSize: 1,
                 precision: 0,
                 callback: function(val) {
-                  if (Math.abs(val - Math.round(val)) < 0.001) {
-                    return Math.round(val);
-                  }
-                  return '';
+                  return Math.abs(val - Math.round(val)) < 0.001 ? Math.round(val) : '';
                 }
               },
               title: { display: true, text: '時間 (進豆為 0 分鐘)', color: '#64748b', font: { size: 11 } }
@@ -747,13 +856,9 @@
               type: 'linear',
               position: 'left',
               min: 0,
-              max: 350,
+              max: 320,
               grid: { color: 'rgba(0, 0, 0, 0.05)' },
-              ticks: { 
-                color: '#475569', 
-                font: { size: 11 },
-                stepSize: 25
-              },
+              ticks: { color: '#475569', font: { size: 11 }, stepSize: 25 },
               title: { display: true, text: '溫度 (°C) / 風壓', color: '#1d4ed8', font: { size: 11, weight: 'bold' } }
             },
             ySecondary: {
@@ -762,11 +867,7 @@
               min: 0,
               max: 35,
               grid: { drawOnChartArea: false },
-              ticks: { 
-                color: '#475569', 
-                font: { size: 11 },
-                stepSize: 5
-              },
+              ticks: { color: '#475569', font: { size: 11 }, stepSize: 5 },
               title: { display: true, text: 'RoR (°C/min)', color: '#0284c7', font: { size: 11, weight: 'bold' } }
             }
           }
@@ -793,8 +894,6 @@
       reader.onload = (evt) => {
         try {
           let parsed = JSON.parse(evt.target.result);
-          
-          // Support nested structure in some Artisan json exports
           if (!parsed.timex && parsed.data && parsed.data.timex) {
             parsed = parsed.data;
           }
@@ -804,7 +903,6 @@
             return;
           }
 
-          // Update Chart Header with Opened JSON File Name
           const titleElem = document.getElementById('chartFileTitle');
           if (titleElem) {
             titleElem.innerText = file.name;
@@ -818,7 +916,7 @@
       reader.readAsText(file);
     }
 
-    // Custom Curve Visibility Toggles
+    // Curve Visibility Toggles
     document.getElementById('curveToggles').addEventListener('click', (e) => {
       const btn = e.target.closest('.toggle-btn');
       if (!btn) return;
@@ -845,8 +943,7 @@
       const { btArr, etArr } = getBtEtArrays(currentData);
       const rorArr = calculateRoR(timeArr, btArr, rorSmoothWindow);
       
-      const timeIdx = currentData.timeindex || [];
-      const chargeIdx = timeIdx[0] || 0;
+      const { chargeIdx } = parseArtisanEvents(currentData);
       const chargeSec = (chargeIdx < timeArr.length && timeArr[chargeIdx] !== undefined) ? timeArr[chargeIdx] : 0;
 
       let csvContent = 'Relative Sec,Relative Min,Bean Temp(BT),Env Temp(ET),BT RoR\n';
@@ -864,6 +961,36 @@
       a.download = `Artisan_Roast_Data_${currentData?.roastisodate || 'export'}.csv`;
       a.click();
       URL.revokeObjectURL(url);
+    });
+
+    // Capture beforeinstallprompt event for PWA Installation
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaDirectTriggerBox.classList.remove('hidden');
+    });
+
+    btnInstallApp.addEventListener('click', () => {
+      pwaInstallModal.classList.remove('hidden');
+    });
+
+    btnCloseInstallModal.addEventListener('click', () => {
+      pwaInstallModal.classList.add('hidden');
+    });
+
+    btnCloseModalBtn.addEventListener('click', () => {
+      pwaInstallModal.classList.add('hidden');
+    });
+
+    btnTriggerPWA.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          pwaInstallModal.classList.add('hidden');
+        }
+        deferredPrompt = null;
+      }
     });
 
     // Application Initialization
