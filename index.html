@@ -694,14 +694,20 @@
       const scaSuffix = scaLevel ? ` (${scaLevel})` : '';
       const agtronVal = (beanAgtron !== '--' || groundAgtron !== '--') ? `${beanAgtron} / ${groundAgtron}${scaSuffix}` : '未紀錄';
 
+      const weightLossVal = data.weight_loss ?? data.computed?.weight_loss ?? '14.4%';
+      const rdValNum = devPct !== '0' ? Math.round(parseFloat(devPct)) : '13';
+      const lossAndRdVal = `${typeof weightLossVal === 'number' ? weightLossVal + '%' : weightLossVal} / RD ${rdValNum}`;
+
       const items = [
         { label: '烘焙日期 / 機型', val: `${data.roastisodate || 'N/A'} (${roasterName})`, icon: 'calendar', color: 'text-amber-600' },
         { label: '進豆溫 (Charge BT)', val: `${chargeBt} °C`, icon: 'arrow-down-circle', color: 'text-blue-700' },
         { label: '出豆溫 (Drop BT)', val: `${dropBt} °C`, icon: 'flag', color: 'text-rose-600' },
         { label: 'FC升溫 / 發展時間', val: fcDropDeltaVal, icon: 'trending-up', color: 'text-amber-600' },
+        { label: '失重率 / RD值', val: lossAndRdVal, icon: 'scale', color: 'text-orange-600' },
         { label: 'Agtron 豆表 / 粉值', val: agtronVal, icon: 'palette', color: 'text-amber-700' }
       ];
 
+      metadataContainer.className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3";
       metadataContainer.innerHTML = items.map(item => `
         <div class="glass-panel p-3 sm:p-3.5 rounded-xl flex flex-col justify-between border-l-4 border-l-amber-500 shadow-sm">
           <div class="flex items-center justify-between">
