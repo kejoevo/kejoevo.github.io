@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>咖啡店會員儲值與消費管理系統</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8f6f0;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-amber-900 text-amber-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-mug-hot text-2xl text-amber-400"></i>
+                <h1 class="text-lg sm:text-xl font-bold tracking-wide">Café VIP Member System</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-xs sm:text-sm bg-amber-800 text-amber-200 px-3 py-1 rounded-full border border-amber-700">
+                    <i class="fa-regular fa-clock mr-1"></i> <span id="current-time">--:--</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 flex-grow w-full">
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-amber-100 text-amber-800 rounded-lg">
+                    <i class="fa-solid fa-users text-xl sm:text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">總會員人數</p>
+                    <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-members">0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-emerald-100 text-emerald-700 rounded-lg">
+                    <i class="fa-solid fa-wallet text-xl sm:text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">總儲值金本金</p>
+                    <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-deposit">$0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-purple-100 text-purple-700 rounded-lg">
+                    <i class="fa-solid fa-gift text-xl sm:text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">總發放贈送金</p>
+                    <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-bonus">$0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-rose-100 text-rose-700 rounded-lg">
+                    <i class="fa-solid fa-receipt text-xl sm:text-2xl"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-medium">累計消費金額</p>
+                    <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-spent">$0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Responsive Grid: Fold / Mobile Split Screen -->
+        <div class="grid grid-cols-12 gap-3 sm:gap-6">
+            
+            <!-- Left Side: Member List -->
+            <div class="col-span-5 sm:col-span-5 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-[620px] sm:h-[680px]">
+                <!-- Search & Add Bar -->
+                <div class="p-2.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col gap-2 justify-between items-center">
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="search-input" placeholder="搜尋電話或姓名..." class="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                    </div>
+                    <button onclick="openAddMemberModal()" class="w-full px-2 py-1.5 sm:py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-lg text-xs sm:text-sm font-medium transition flex items-center justify-center whitespace-nowrap shadow-sm cursor-pointer">
+                        <i class="fa-solid fa-user-plus mr-1"></i> 新增會員
+                    </button>
+                </div>
+
+                <!-- Members List Container -->
+                <div class="flex-grow overflow-y-auto custom-scroll" id="member-list">
+                    <!-- Members inserted dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Right Side: Member Details & Transactions -->
+            <div class="col-span-7 sm:col-span-7 flex flex-col space-y-4 sm:space-y-6">
+                <!-- No Selection Placeholder -->
+                <div id="no-member-selected" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-12 text-center flex flex-col items-center justify-center h-[620px] sm:h-[680px]">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 text-amber-800 rounded-full flex items-center justify-center mb-4 text-2xl sm:text-3xl">
+                        <i class="fa-solid fa-address-card"></i>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-700 mb-1">尚未選擇會員</h3>
+                    <p class="text-slate-400 text-xs sm:text-sm max-w-sm">請從左側列表中選擇一名會員以檢視詳細資料、進行儲值或扣款消費紀錄。</p>
+                </div>
+
+                <!-- Selected Member Detail Panel -->
+                <div id="member-detail-panel" class="hidden flex-col h-[620px] sm:h-[680px] space-y-3 sm:space-y-4">
+                    <!-- Card 1: Info & Balances -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3.5 sm:p-5 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                        
+                        <div class="flex justify-between items-start mb-3 sm:mb-4">
+                            <div>
+                                <div class="flex items-center space-x-1.5 sm:space-x-2">
+                                    <h2 class="text-lg sm:text-2xl font-bold text-slate-800" id="detail-name">---</h2>
+                                    <span class="text-[10px] sm:text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium" id="detail-gender">VIP</span>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1 text-slate-400"></i><span id="detail-phone">---</span> | 生日: <span id="detail-birthday">--</span></p>
+                            </div>
+                            <div class="flex items-center space-x-1.5 sm:space-x-2 relative z-10">
+                                <button type="button" onclick="editCurrentMember()" class="p-2 sm:p-3 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-800 rounded-lg transition flex items-center justify-center text-xs sm:text-sm font-medium cursor-pointer shadow-sm border border-slate-200" title="編輯資料">
+                                    <i class="fa-solid fa-pen-to-square sm:mr-1.5 pointer-events-none"></i>
+                                    <span class="hidden sm:inline pointer-events-none">編輯</span>
+                                </button>
+                                <button type="button" onclick="confirmDeleteCurrentMember()" class="p-2 sm:p-3 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-800 rounded-lg transition flex items-center justify-center text-xs sm:text-sm font-medium cursor-pointer shadow-sm border border-rose-200" title="刪除會員">
+                                    <i class="fa-solid fa-trash-can sm:mr-1.5 pointer-events-none"></i>
+                                    <span class="hidden sm:inline pointer-events-none">刪除</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Balances Grid -->
+                        <div class="grid grid-cols-3 gap-2 sm:gap-3 bg-slate-50 p-2.5 sm:p-3.5 rounded-xl border border-slate-100">
+                            <div>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mb-0.5">儲值金本金</p>
+                                <p class="text-base sm:text-xl font-bold text-emerald-600" id="detail-real-balance">$0</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mb-0.5">贈送金餘額</p>
+                                <p class="text-base sm:text-xl font-bold text-purple-600" id="detail-bonus-balance">$0</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] sm:text-xs text-slate-500 mb-0.5">總可用餘額</p>
+                                <p class="text-base sm:text-xl font-bold text-amber-700" id="detail-total-balance">$0</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-2.5 text-[11px] sm:text-xs text-slate-400 flex justify-between items-center">
+                            <span>累計消費: <strong class="text-slate-600" id="detail-total-spent">$0</strong></span>
+                            <span>備註: <span id="detail-note" class="text-slate-600 font-normal">無</span></span>
+                        </div>
+
+                        <!-- Quick Action Buttons -->
+                        <div class="grid grid-cols-2 gap-2 sm:gap-3 mt-3 sm:mt-4">
+                            <button onclick="openModal('deposit-modal')" class="py-2 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs sm:text-sm shadow-sm transition flex items-center justify-center cursor-pointer">
+                                <i class="fa-solid fa-circle-plus mr-1.5"></i> 會員儲值
+                            </button>
+                            <button onclick="openModal('spend-modal')" class="py-2 sm:py-2.5 bg-amber-800 hover:bg-amber-900 text-white font-medium rounded-lg text-xs sm:text-sm shadow-sm transition flex items-center justify-center cursor-pointer">
+                                <i class="fa-solid fa-bag-shopping mr-1.5"></i> 扣款消費
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Transaction History -->
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 sm:p-4 flex-grow flex flex-col overflow-hidden">
+                        <div class="flex justify-between items-center mb-2.5">
+                            <h3 class="font-bold text-slate-700 text-xs sm:text-sm flex items-center">
+                                <i class="fa-solid fa-clock-rotate-left text-amber-700 mr-1.5"></i> 交易與消費紀錄
+                            </h3>
+                            <span class="text-[10px] sm:text-xs text-slate-400" id="history-count">共 0 筆紀錄</span>
+                        </div>
+
+                        <div class="flex-grow overflow-y-auto custom-scroll pr-1" id="history-list">
+                            <!-- History items inserted via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add / Edit Member -->
+    <div id="add-member-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="modal-member-title">新增會員資料</h3>
+                <button onclick="closeModal('add-member-modal')" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="member-form" class="p-6 space-y-4" onsubmit="handleSaveMember(event)">
+                <input type="hidden" id="form-member-id">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">會員姓名 <span class="text-rose-500">*</span></label>
+                    <input type="text" id="form-name" required placeholder="請輸入姓名" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">電話號碼 <span class="text-rose-500">*</span></label>
+                    <input type="tel" id="form-phone" required placeholder="0912345678" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">性別 / 稱謂</label>
+                        <select id="form-gender" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                            <option value="小姐">小姐</option>
+                            <option value="先生">先生</option>
+                            <option value="VIP">VIP</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">生日</label>
+                        <input type="date" id="form-birthday" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">喜好 / 備註</label>
+                    <textarea id="form-note" rows="2" placeholder="例如：去冰半糖、喜歡淺焙..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('add-member-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-sm font-medium">儲存會員</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Deposit -->
+    <div id="deposit-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div class="bg-emerald-700 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-wallet mr-2"></i>會員儲值</h3>
+                <button onclick="closeModal('deposit-modal')" class="text-emerald-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="deposit-form" class="p-6 space-y-4" onsubmit="handleDeposit(event)">
+                <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-xs text-emerald-800">
+                    正在為 <strong id="deposit-member-name" class="text-sm">--</strong> 辦理儲值
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">儲值本金 (元) <span class="text-rose-500">*</span></label>
+                    <input type="number" id="deposit-amount" required min="1" step="1" placeholder="請輸入實收金額" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-lg font-bold text-slate-800">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">額外贈送金額 (元)</label>
+                    <input type="number" id="deposit-bonus" min="0" step="1" value="0" placeholder="活動贈送金額" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-purple-700 font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">儲值備註 / 活動名稱</label>
+                    <input type="text" id="deposit-note" placeholder="例如：新春滿千送百活動" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-semibold text-slate-600">快速加入活動名稱</label>
+                        <button type="button" onclick="openQuickNotesManager()" class="text-xs text-emerald-700 hover:text-emerald-900 font-medium flex items-center cursor-pointer">
+                            <i class="fa-solid fa-gear mr-1"></i> 管理標籤
+                        </button>
+                    </div>
+                    <!-- Dynamic Quick Notes Container -->
+                    <div class="grid grid-cols-3 gap-2" id="quick-notes-container">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('deposit-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-sm font-medium">確認儲值</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Quick Deposit Notes Manager -->
+    <div id="quick-notes-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-tags mr-2"></i>管理儲值活動標籤</h3>
+                <button onclick="closeModal('quick-notes-modal')" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex space-x-2">
+                    <input type="text" id="new-quick-note-input" placeholder="輸入新活動名稱..." class="flex-grow px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <button type="button" onclick="addQuickDepositNote()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-sm font-medium transition cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus mr-1"></i> 新增
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400">點擊右側 ✕ 可移除標籤；點擊標籤名稱可直接進行編輯：</p>
+                <div class="max-h-60 overflow-y-auto custom-scroll space-y-2 border border-slate-200 p-2 rounded-xl bg-slate-50" id="managed-notes-list">
+                    <!-- Managed list items rendered via JS -->
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="button" onclick="closeModal('quick-notes-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-medium">完成並返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Spend / Deduction -->
+    <div id="spend-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-bag-shopping mr-2"></i>會員扣款消費</h3>
+                <button onclick="closeModal('spend-modal')" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="spend-form" class="p-6 space-y-4" onsubmit="handleSpend(event)">
+                <div class="bg-amber-50 p-3 rounded-lg border border-amber-100 flex justify-between items-center text-xs">
+                    <span class="text-slate-600">會員：<strong id="spend-member-name" class="text-slate-800 text-sm">--</strong></span>
+                    <span class="text-slate-600">可用總餘額：<strong id="spend-member-balance" class="text-amber-800 text-sm">$0</strong></span>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label class="block text-xs font-semibold text-slate-600">快速品項點餐 (點擊累加金額)</label>
+                        <button type="button" onclick="openQuickItemsManager()" class="text-xs text-amber-800 hover:text-amber-950 font-medium flex items-center cursor-pointer">
+                            <i class="fa-solid fa-gear mr-1"></i> 管理品項
+                        </button>
+                    </div>
+                    <!-- Quick Items Buttons Container -->
+                    <div class="grid grid-cols-3 gap-2 mb-2" id="quick-items-container">
+                        <!-- Loaded dynamically via JS -->
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-600">應扣總金額 (元) <span class="text-rose-500">*</span></label>
+                        <span id="spend-balance-warning" class="text-[11px] font-bold text-rose-600 hidden flex items-center">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i>餘額不足！
+                        </span>
+                    </div>
+                    <input type="number" id="spend-amount" required min="1" step="1" placeholder="請輸入金額" oninput="validateSpendAmount()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none text-lg font-bold text-slate-800 transition-colors duration-200">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">扣款優先順序</label>
+                    <select id="spend-priority" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                        <option value="bonus-first">優先扣除「贈送金」 (貼心熱門選項)</option>
+                        <option value="real-first">優先扣除「儲值本金」</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">消費備註 / 明細</label>
+                    <input type="text" id="spend-note" placeholder="例如：內用冰拿鐵 2 杯" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeModal('spend-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
+                    <button type="submit" id="spend-submit-btn" class="px-4 py-2 bg-amber-800 hover:bg-amber-900 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition">確認扣款</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Quick Items Manager -->
+    <div id="quick-items-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
+            <div class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check mr-2"></i>管理點餐快速品項與價格</h3>
+                <button onclick="closeModal('quick-items-modal')" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-12 gap-2">
+                    <input type="text" id="new-item-name-input" placeholder="品項名稱 (例: 焦糖瑪奇朵)" class="col-span-6 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <input type="number" id="new-item-price-input" min="1" placeholder="單價 $" class="col-span-3 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <button type="button" onclick="addQuickItemSetting()" class="col-span-3 px-3 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-sm font-medium transition cursor-pointer whitespace-nowrap">
+                        <i class="fa-solid fa-plus mr-1"></i> 新增
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400">可直接編輯名稱與價格，點擊右側 🗑️ 可移除品項：</p>
+                <div class="max-h-60 overflow-y-auto custom-scroll space-y-2 border border-slate-200 p-2 rounded-xl bg-slate-50" id="managed-items-list">
+                    <!-- Managed quick menu items rendered via JS -->
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="button" onclick="closeModal('quick-items-modal')" class="px-4 py-2 bg-amber-900 hover:bg-amber-950 text-white rounded-lg text-sm font-medium">完成並返回</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmation for Voiding Transaction -->
+    <div id="void-confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden p-6 text-center space-y-4">
+            <div class="w-12 h-12 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-rotate-left"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-lg">確認辦理沖銷 / 退款？</h3>
+            <p class="text-xs text-slate-500 leading-relaxed" id="void-modal-desc">
+                您確定要作廢此筆紀錄？此動作將會回推帳戶餘額。
+            </p>
+            <div class="flex space-x-3 pt-2">
+                <button type="button" onclick="closeModal('void-confirm-modal')" class="flex-1 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
+                <button type="button" onclick="executeVoidTransaction()" class="flex-1 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-sm font-medium">確定作廢</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmation for Deleting Member -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden p-6 text-center space-y-4">
+            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-lg">刪除會員資料</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">
+                您確定要刪除會員「<strong id="delete-member-name" class="text-slate-800">--</strong>」嗎？此動作將無法復原。
+            </p>
+            <div class="flex space-x-3 pt-2">
+                <button type="button" onclick="closeModal('delete-confirm-modal')" class="flex-1 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
+                <button type="button" onclick="executeDeleteMember()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium">確定刪除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Alert Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-lg flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-msg" class="text-xs font-medium">提示訊息</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Initial Mock Data
+        const initialMembers = [
+            {
+                id: 'm1',
+                name: '林雅婷',
+                phone: '0912345678',
+                birthday: '1992-05-18',
+                gender: '小姐',
+                note: '喜歡淺焙手沖、燕麥奶拿鐵',
+                realBalance: 1200,
+                bonusBalance: 200,
+                totalSpent: 850,
+                history: [
+                    { id: 'h1', type: 'deposit', realAmount: 1500, bonusAmount: 200, note: '首次開戶儲值活動', time: '2026-03-01 11:20', status: 'valid' },
+                    { id: 'h2', type: 'spend', amount: 350, usedReal: 150, usedBonus: 200, note: '拿鐵咖啡 + 肉桂捲', time: '2026-03-10 14:15', status: 'valid' },
+                    { id: 'h3', type: 'spend', amount: 500, usedReal: 500, usedBonus: 0, note: '咖啡豆乙包', time: '2026-03-25 16:00', status: 'valid' }
+                ]
+            },
+            {
+                id: 'm2',
+                name: '陳建宏',
+                phone: '0988765432',
+                birthday: '1985-11-04',
+                gender: '先生',
+                note: '常客，習慣早晨去冰美式',
+                realBalance: 400,
+                bonusBalance: 0,
+                totalSpent: 1600,
+                history: [
+                    { id: 'h4', type: 'deposit', realAmount: 2000, bonusAmount: 0, note: '一般儲值', time: '2026-02-15 08:30', status: 'valid' },
+                    { id: 'h5', type: 'spend', amount: 1600, usedReal: 1600, usedBonus: 0, note: '辦公室外帶咖啡', time: '2026-03-02 09:10', status: 'valid' }
+                ]
+            }
+        ];
+
+        // State Management
+        let members = [...initialMembers];
+        let selectedMemberId = null;
+        let pendingVoidHistoryId = null;
+
+        // Quick Deposit Activity Notes Array
+        let quickDepositNotes = [
+            '新春滿千送百',
+            '週年慶優惠',
+            'VIP 開戶禮',
+            '常客儲值回饋',
+            '當月壽星儲值',
+            '門市快閃活動'
+        ];
+
+        // Quick Order Menu Items Array
+        let quickMenuItems = [
+            { name: '拿鐵咖啡', price: 120 },
+            { name: '美式咖啡', price: 90 },
+            { name: '燕麥奶拿鐵', price: 140 },
+            { name: '手沖特調', price: 160 },
+            { name: '肉桂捲', price: 110 },
+            { name: '咖啡豆乙包', price: 450 }
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            setInterval(updateTime, 1000);
+            renderMemberList();
+            updateGlobalStats();
+            renderQuickDepositNotes();
+            renderQuickMenuItems();
+
+            // Search Input Event
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                renderMemberList(e.target.value.trim());
+            });
+        });
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').innerText = now.toLocaleString('zh-TW', {
+                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function updateGlobalStats() {
+            const totalMembers = members.length;
+            const totalDeposit = members.reduce((sum, m) => sum + m.realBalance, 0);
+            const totalBonus = members.reduce((sum, m) => sum + m.bonusBalance, 0);
+            const totalSpent = members.reduce((sum, m) => sum + m.totalSpent, 0);
+
+            document.getElementById('stat-total-members').innerText = totalMembers;
+            document.getElementById('stat-total-deposit').innerText = `$${totalDeposit.toLocaleString()}`;
+            document.getElementById('stat-total-bonus').innerText = `$${totalBonus.toLocaleString()}`;
+            document.getElementById('stat-total-spent').innerText = `$${totalSpent.toLocaleString()}`;
+        }
+
+        function renderMemberList(filterKeyword = '') {
+            const listEl = document.getElementById('member-list');
+            listEl.innerHTML = '';
+
+            const filtered = members.filter(m => 
+                m.name.includes(filterKeyword) || m.phone.includes(filterKeyword)
+            );
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm">
+                        <i class="fa-solid fa-user-slash text-2xl mb-2"></i>
+                        <p>找不到符合條件的會員</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(m => {
+                const totalBalance = m.realBalance + m.bonusBalance;
+                const isSelected = m.id === selectedMemberId;
+
+                const item = document.createElement('div');
+                item.className = `p-3 sm:p-4 cursor-pointer transition border-b border-slate-100 border-l-4 ${
+                    isSelected 
+                        ? 'bg-amber-50 border-l-amber-700 font-medium' 
+                        : 'bg-white border-l-transparent hover:bg-amber-50/60'
+                }`;
+                
+                item.onclick = () => selectMember(m.id);
+
+                item.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-bold text-slate-800 text-sm sm:text-base">${escapeHtml(m.name)}</div>
+                            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${escapeHtml(m.phone)}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs sm:text-sm font-bold text-amber-800">$${totalBalance.toLocaleString()}</div>
+                            <div class="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">本金:$${m.realBalance}</div>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function selectMember(id) {
+            selectedMemberId = id;
+            renderMemberList(document.getElementById('search-input').value.trim());
+
+            const member = members.find(m => m.id === id);
+            if (!member) return;
+
+            document.getElementById('no-member-selected').classList.add('hidden');
+            const panel = document.getElementById('member-detail-panel');
+            panel.classList.remove('hidden');
+            panel.classList.add('flex');
+
+            document.getElementById('detail-name').innerText = member.name;
+            document.getElementById('detail-phone').innerText = member.phone;
+            document.getElementById('detail-gender').innerText = member.gender || 'VIP';
+            document.getElementById('detail-birthday').innerText = member.birthday || '未設定';
+            document.getElementById('detail-note').innerText = member.note || '無';
+
+            document.getElementById('detail-real-balance').innerText = `$${member.realBalance.toLocaleString()}`;
+            document.getElementById('detail-bonus-balance').innerText = `$${member.bonusBalance.toLocaleString()}`;
+            document.getElementById('detail-total-balance').innerText = `$${(member.realBalance + member.bonusBalance).toLocaleString()}`;
+            document.getElementById('detail-total-spent').innerText = `$${member.totalSpent.toLocaleString()}`;
+
+            renderHistory(member.history);
+        }
+
+        function renderHistory(historyList) {
+            const historyEl = document.getElementById('history-list');
+            document.getElementById('history-count').innerText = `共 ${historyList.length} 筆紀錄`;
+            historyEl.innerHTML = '';
+
+            if (!historyList || historyList.length === 0) {
+                historyEl.innerHTML = `
+                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm">
+                        <i class="fa-solid fa-receipt text-2xl mb-2"></i>
+                        <p>尚無交易或消費紀錄</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const sorted = [...historyList].reverse();
+
+            sorted.forEach(h => {
+                const isDeposit = h.type === 'deposit';
+                const isVoided = h.status === 'voided';
+                const item = document.createElement('div');
+                item.className = `py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-center text-xs sm:text-sm ${isVoided ? 'opacity-50' : ''}`;
+
+                let amountMarkup = '';
+                if (isDeposit) {
+                    amountMarkup = `<span class="font-bold ${isVoided ? 'text-slate-400 line-through' : 'text-emerald-600'}">+ $${(h.realAmount + h.bonusAmount).toLocaleString()}</span>`;
+                } else {
+                    amountMarkup = `<span class="font-bold ${isVoided ? 'text-slate-400 line-through' : 'text-rose-600'}">- $${h.amount.toLocaleString()}</span>`;
+                }
+
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 ${
+                            isVoided ? 'bg-slate-100 text-slate-400' : (isDeposit ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700')
+                        }">
+                            <i class="fa-solid ${isDeposit ? 'fa-wallet' : 'fa-basket-shopping'} text-[10px] sm:text-xs"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-1.5">
+                                <p class="font-medium text-slate-700 truncate ${isVoided ? 'line-through' : ''}">${escapeHtml(h.note || (isDeposit ? '儲值' : '消費扣款'))}</p>
+                                ${isVoided ? '<span class="text-[9px] bg-slate-200 text-slate-600 px-1 py-0.2 rounded font-normal shrink-0">已作廢</span>' : ''}
+                            </div>
+                            <p class="text-[10px] text-slate-400">${h.time}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                        <div class="text-right">
+                            ${amountMarkup}
+                            <p class="text-[9px] sm:text-[10px] text-slate-400">
+                                ${isDeposit ? `(本金$${h.realAmount}/贈$${h.bonusAmount})` : `(本金$${h.usedReal}/贈$${h.usedBonus})`}
+                            </p>
+                        </div>
+                        ${!isVoided ? `
+                            <button onclick="confirmVoidTransaction('${h.id}')" class="p-1 text-slate-400 hover:text-amber-800 hover:bg-amber-50 rounded transition text-xs cursor-pointer" title="作廢/沖銷此筆紀錄">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                historyEl.appendChild(item);
+            });
+        }
+
+        function renderQuickDepositNotes() {
+            const container = document.getElementById('quick-notes-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            quickDepositNotes.forEach(noteText => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => setDepositQuickNote(noteText);
+                btn.className = 'py-1.5 px-2 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 border border-slate-200 rounded text-xs transition truncate cursor-pointer';
+                btn.innerText = noteText;
+                btn.title = noteText;
+                container.appendChild(btn);
+            });
+        }
+
+        function openQuickNotesManager() {
+            renderManagedNotesList();
+            openModal('quick-notes-modal');
+        }
+
+        function renderManagedNotesList() {
+            const listEl = document.getElementById('managed-notes-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            if (quickDepositNotes.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">目前尚無標籤，請於上方輸入新增。</div>`;
+                return;
+            }
+
+            quickDepositNotes.forEach((noteText, idx) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 text-xs shadow-sm';
+                item.innerHTML = `
+                    <input type="text" value="${escapeHtml(noteText)}" onchange="updateQuickDepositNote(${idx}, this.value)" class="flex-grow mr-2 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded text-xs focus:outline-none text-slate-700 font-medium">
+                    <button type="button" onclick="removeQuickDepositNote(${idx})" class="text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded transition cursor-pointer" title="刪除標籤">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function addQuickDepositNote() {
+            const input = document.getElementById('new-quick-note-input');
+            const val = input.value.trim();
+            if (!val) {
+                showToast('請輸入活動名稱', 'error');
+                return;
+            }
+            quickDepositNotes.push(val);
+            input.value = '';
+            renderManagedNotesList();
+            renderQuickDepositNotes();
+            showToast('新增標籤成功！');
+        }
+
+        function updateQuickDepositNote(index, newVal) {
+            const val = newVal.trim();
+            if (!val) {
+                removeQuickDepositNote(index);
+                return;
+            }
+            quickDepositNotes[index] = val;
+            renderQuickDepositNotes();
+            showToast('活動標籤已更新');
+        }
+
+        function removeQuickDepositNote(index) {
+            quickDepositNotes.splice(index, 1);
+            renderManagedNotesList();
+            renderQuickDepositNotes();
+            showToast('標籤已移除');
+        }
+
+        function setDepositQuickNote(noteText) {
+            const noteInput = document.getElementById('deposit-note');
+            noteInput.value = noteText;
+        }
+
+        function renderQuickMenuItems() {
+            const container = document.getElementById('quick-items-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            quickMenuItems.forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => addQuickItem(item.name, item.price);
+                btn.className = 'p-2 border border-slate-200 rounded-lg text-xs hover:bg-amber-50 hover:border-amber-300 transition text-slate-700 font-medium truncate cursor-pointer';
+                btn.innerText = `${item.name} $${item.price}`;
+                btn.title = `${item.name} $${item.price}`;
+                container.appendChild(btn);
+            });
+        }
+
+        function openQuickItemsManager() {
+            renderManagedItemsList();
+            openModal('quick-items-modal');
+        }
+
+        function renderManagedItemsList() {
+            const listEl = document.getElementById('managed-items-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            if (quickMenuItems.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">目前尚無品項，請於上方輸入新增。</div>`;
+                return;
+            }
+
+            quickMenuItems.forEach((itemObj, idx) => {
+                const item = document.createElement('div');
+                item.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-lg border border-slate-200 text-xs shadow-sm';
+                item.innerHTML = `
+                    <input type="text" value="${escapeHtml(itemObj.name)}" onchange="updateQuickItemName(${idx}, this.value)" class="col-span-6 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded text-xs focus:outline-none text-slate-700 font-medium">
+                    <div class="col-span-4 flex items-center">
+                        <span class="text-slate-400 mr-1">$</span>
+                        <input type="number" min="1" value="${itemObj.price}" onchange="updateQuickItemPrice(${idx}, this.value)" class="w-full px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded text-xs focus:outline-none text-slate-700 font-bold">
+                    </div>
+                    <button type="button" onclick="removeQuickItemSetting(${idx})" class="col-span-2 text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded transition text-center cursor-pointer" title="刪除品項">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function addQuickItemSetting() {
+            const nameInput = document.getElementById('new-item-name-input');
+            const priceInput = document.getElementById('new-item-price-input');
+            const nameVal = nameInput.value.trim();
+            const priceVal = parseFloat(priceInput.value) || 0;
+
+            if (!nameVal) {
+                showToast('請輸入品項名稱', 'error');
+                return;
+            }
+            if (priceVal <= 0) {
+                showToast('請輸入有效的單價金額', 'error');
+                return;
+            }
+
+            quickMenuItems.push({ name: nameVal, price: priceVal });
+            nameInput.value = '';
+            priceInput.value = '';
+            renderManagedItemsList();
+            renderQuickMenuItems();
+            showToast(`已新增品項「${nameVal}」$${priceVal}`);
+        }
+
+        function updateQuickItemName(index, newName) {
+            const val = newName.trim();
+            if (!val) {
+                showToast('品項名稱不可為空', 'error');
+                renderManagedItemsList();
+                return;
+            }
+            quickMenuItems[index].name = val;
+            renderQuickMenuItems();
+            showToast('品項名稱已更新');
+        }
+
+        function updateQuickItemPrice(index, newPrice) {
+            const val = parseFloat(newPrice) || 0;
+            if (val <= 0) {
+                showToast('金額必須大於 0', 'error');
+                renderManagedItemsList();
+                return;
+            }
+            quickMenuItems[index].price = val;
+            renderQuickMenuItems();
+            showToast('品項價格已更新');
+        }
+
+        function removeQuickItemSetting(index) {
+            const removed = quickMenuItems[index];
+            quickMenuItems.splice(index, 1);
+            renderManagedItemsList();
+            renderQuickMenuItems();
+            showToast(`已移除「${removed ? removed.name : '品項'}」`);
+        }
+
+        function addQuickItem(itemName, price) {
+            const amountInput = document.getElementById('spend-amount');
+            const noteInput = document.getElementById('spend-note');
+
+            const currentAmount = parseFloat(amountInput.value) || 0;
+            amountInput.value = currentAmount + price;
+
+            if (noteInput.value) {
+                noteInput.value += `, ${itemName}`;
+            } else {
+                noteInput.value = itemName;
+            }
+
+            validateSpendAmount();
+        }
+
+        function confirmVoidTransaction(historyId) {
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const record = member.history.find(h => h.id === historyId);
+            if (!record || record.status === 'voided') return;
+
+            pendingVoidHistoryId = historyId;
+
+            const descEl = document.getElementById('void-modal-desc');
+            if (record.type === 'deposit') {
+                descEl.innerHTML = `您確定要作廢此筆儲值紀錄？<br><span class="text-amber-800 font-semibold">將扣回本金 $${record.realAmount} 與贈送金 $${record.bonusAmount}</span>。`;
+            } else {
+                descEl.innerHTML = `您確定要退款/作廢此筆消費？<br><span class="text-emerald-700 font-semibold">將歸還本金 $${record.usedReal} 與贈送金 $${record.usedBonus}</span> 到會員帳戶。`;
+            }
+
+            openModal('void-confirm-modal');
+        }
+
+        function executeVoidTransaction() {
+            if (!selectedMemberId || !pendingVoidHistoryId) return;
+
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const record = member.history.find(h => h.id === pendingVoidHistoryId);
+            if (!record || record.status === 'voided') return;
+
+            if (record.type === 'deposit') {
+                if (member.realBalance < record.realAmount || member.bonusBalance < record.bonusAmount) {
+                    showToast('作廢失敗：會員帳戶剩餘金額不足以扣回當初儲值金額！', 'error');
+                    closeModal('void-confirm-modal');
+                    return;
+                }
+                member.realBalance -= record.realAmount;
+                member.bonusBalance -= record.bonusAmount;
+            } else if (record.type === 'spend') {
+                member.realBalance += record.usedReal;
+                member.bonusBalance += record.usedBonus;
+                member.totalSpent = Math.max(0, member.totalSpent - record.amount);
+            }
+
+            record.status = 'voided';
+            const now = new Date();
+            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            member.history.push({
+                id: 'h_' + Date.now(),
+                type: record.type === 'deposit' ? 'spend' : 'deposit',
+                realAmount: record.type === 'deposit' ? 0 : record.usedReal,
+                bonusAmount: record.type === 'deposit' ? 0 : record.usedBonus,
+                amount: record.type === 'deposit' ? (record.realAmount + record.bonusAmount) : record.amount,
+                usedReal: record.type === 'deposit' ? record.realAmount : 0,
+                usedBonus: record.type === 'deposit' ? record.bonusAmount : 0,
+                note: `[作廢沖銷] ${record.note || '原紀錄作廢'}`,
+                time: timeStr,
+                status: 'valid'
+            });
+
+            closeModal('void-confirm-modal');
+            pendingVoidHistoryId = null;
+            selectMember(selectedMemberId);
+            updateGlobalStats();
+            showToast('已成功辦理沖銷與退款！');
+        }
+
+        function openAddMemberModal() {
+            document.getElementById('modal-member-title').innerText = '新增會員資料';
+            document.getElementById('member-form').reset();
+            document.getElementById('form-member-id').value = '';
+            openModal('add-member-modal');
+        }
+
+        function openModal(id) {
+            if (id === 'deposit-modal' || id === 'spend-modal') {
+                if (!selectedMemberId) {
+                    showToast('請先選擇一名會員', 'error');
+                    return;
+                }
+                const m = members.find(x => x.id === selectedMemberId);
+                if (id === 'deposit-modal') {
+                    document.getElementById('deposit-member-name').innerText = m.name;
+                    document.getElementById('deposit-amount').value = '';
+                    document.getElementById('deposit-bonus').value = '0';
+                    document.getElementById('deposit-note').value = '';
+                } else if (id === 'spend-modal') {
+                    document.getElementById('spend-member-name').innerText = m.name;
+                    document.getElementById('spend-member-balance').innerText = `$${(m.realBalance + m.bonusBalance).toLocaleString()}`;
+                    document.getElementById('spend-amount').value = '';
+                    document.getElementById('spend-note').value = '';
+                    validateSpendAmount();
+                }
+            }
+
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function validateSpendAmount() {
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const amountInput = document.getElementById('spend-amount');
+            const warningEl = document.getElementById('spend-balance-warning');
+            const submitBtn = document.getElementById('spend-submit-btn');
+
+            if (!amountInput || !warningEl || !submitBtn) return;
+
+            const totalAvail = member.realBalance + member.bonusBalance;
+            const enteredAmount = parseFloat(amountInput.value) || 0;
+
+            if (enteredAmount > totalAvail) {
+                amountInput.classList.remove('border-slate-300', 'focus:ring-amber-500', 'focus:border-amber-500', 'text-slate-800');
+                amountInput.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-600', 'focus:ring-rose-500', 'focus:border-rose-500');
+                warningEl.classList.remove('hidden');
+                submitBtn.disabled = true;
+            } else {
+                amountInput.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-600', 'focus:ring-rose-500', 'focus:border-rose-500');
+                amountInput.classList.add('border-slate-300', 'text-slate-800', 'focus:ring-amber-500', 'focus:border-amber-500');
+                warningEl.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        }
+
+        function editCurrentMember() {
+            if (!selectedMemberId) {
+                showToast('請先選擇要修改的會員', 'error');
+                return;
+            }
+            const m = members.find(x => x.id === selectedMemberId);
+            if (!m) return;
+
+            document.getElementById('modal-member-title').innerText = '編輯會員資料';
+            document.getElementById('form-member-id').value = m.id;
+            document.getElementById('form-name').value = m.name;
+            document.getElementById('form-phone').value = m.phone;
+            document.getElementById('form-birthday').value = m.birthday || '';
+            document.getElementById('form-gender').value = m.gender || 'VIP';
+            document.getElementById('form-note').value = m.note || '';
+
+            openModal('add-member-modal');
+        }
+
+        function confirmDeleteCurrentMember() {
+            if (!selectedMemberId) {
+                showToast('請先選擇要刪除的會員', 'error');
+                return;
+            }
+            const m = members.find(x => x.id === selectedMemberId);
+            if (!m) return;
+
+            document.getElementById('delete-member-name').innerText = m.name;
+            openModal('delete-confirm-modal');
+        }
+
+        function executeDeleteMember() {
+            if (!selectedMemberId) return;
+
+            const m = members.find(x => x.id === selectedMemberId);
+            const memberName = m ? m.name : '';
+
+            members = members.filter(x => x.id !== selectedMemberId);
+            selectedMemberId = null;
+
+            document.getElementById('member-detail-panel').classList.add('hidden');
+            document.getElementById('member-detail-panel').classList.remove('flex');
+            document.getElementById('no-member-selected').classList.remove('hidden');
+
+            closeModal('delete-confirm-modal');
+            renderMemberList();
+            updateGlobalStats();
+            showToast(`已成功刪除會員「${memberName}」`);
+        }
+
+        function handleSaveMember(e) {
+            e.preventDefault();
+            const id = document.getElementById('form-member-id').value;
+            const name = document.getElementById('form-name').value.trim();
+            const phone = document.getElementById('form-phone').value.trim();
+            const birthday = document.getElementById('form-birthday').value;
+            const gender = document.getElementById('form-gender').value;
+            const note = document.getElementById('form-note').value.trim();
+
+            if (id) {
+                const member = members.find(m => m.id === id);
+                if (member) {
+                    member.name = name;
+                    member.phone = phone;
+                    member.birthday = birthday;
+                    member.gender = gender;
+                    member.note = note;
+                    showToast('會員資料已成功更新');
+                }
+            } else {
+                const newMember = {
+                    id: 'm_' + Date.now(),
+                    name,
+                    phone,
+                    birthday,
+                    gender,
+                    note,
+                    realBalance: 0,
+                    bonusBalance: 0,
+                    totalSpent: 0,
+                    history: []
+                };
+                members.unshift(newMember);
+                selectedMemberId = newMember.id;
+                showToast('成功新增會員');
+            }
+
+            closeModal('add-member-modal');
+            renderMemberList();
+            updateGlobalStats();
+            if (selectedMemberId) selectMember(selectedMemberId);
+        }
+
+        function handleDeposit(e) {
+            e.preventDefault();
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const realAmount = parseFloat(document.getElementById('deposit-amount').value) || 0;
+            const bonusAmount = parseFloat(document.getElementById('deposit-bonus').value) || 0;
+            const note = document.getElementById('deposit-note').value.trim() || '儲值金額';
+
+            if (realAmount <= 0) {
+                showToast('儲值金額必須大於 0', 'error');
+                return;
+            }
+
+            member.realBalance += realAmount;
+            member.bonusBalance += bonusAmount;
+
+            const now = new Date();
+            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            member.history.push({
+                id: 'h_' + Date.now(),
+                type: 'deposit',
+                realAmount,
+                bonusAmount,
+                note,
+                time: timeStr,
+                status: 'valid'
+            });
+
+            closeModal('deposit-modal');
+            selectMember(selectedMemberId);
+            updateGlobalStats();
+            showToast(`成功儲值 $${realAmount + bonusAmount}`);
+        }
+
+        function handleSpend(e) {
+            e.preventDefault();
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const amount = parseFloat(document.getElementById('spend-amount').value) || 0;
+            const priority = document.getElementById('spend-priority').value;
+            const note = document.getElementById('spend-note').value.trim() || '咖啡門市消費';
+
+            const totalAvail = member.realBalance + member.bonusBalance;
+
+            if (amount <= 0) {
+                showToast('消費金額必須大於 0', 'error');
+                return;
+            }
+
+            if (amount > totalAvail) {
+                showToast(`餘額不足！當前總餘額為 $${totalAvail}`, 'error');
+                return;
+            }
+
+            let usedReal = 0;
+            let usedBonus = 0;
+
+            if (priority === 'bonus-first') {
+                if (member.bonusBalance >= amount) {
+                    usedBonus = amount;
+                    member.bonusBalance -= amount;
+                } else {
+                    usedBonus = member.bonusBalance;
+                    const remaining = amount - usedBonus;
+                    member.bonusBalance = 0;
+                    member.realBalance -= remaining;
+                    usedReal = remaining;
+                }
+            } else {
+                if (member.realBalance >= amount) {
+                    usedReal = amount;
+                    member.realBalance -= amount;
+                } else {
+                    usedReal = member.realBalance;
+                    const remaining = amount - usedReal;
+                    member.realBalance = 0;
+                    member.bonusBalance -= remaining;
+                    usedBonus = remaining;
+                }
+            }
+
+            member.totalSpent += amount;
+
+            const now = new Date();
+            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+
+            member.history.push({
+                id: 'h_' + Date.now(),
+                type: 'spend',
+                amount,
+                usedReal,
+                usedBonus,
+                note,
+                time: timeStr,
+                status: 'valid'
+            });
+
+            closeModal('spend-modal');
+            selectMember(selectedMemberId);
+            updateGlobalStats();
+            showToast(`扣款成功 $${amount}`);
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
+            const msgEl = document.getElementById('toast-msg');
+
+            msgEl.innerText = msg;
+            if (type === 'error') {
+                icon.className = 'fa-solid fa-circle-exclamation text-rose-400';
+            } else {
+                icon.className = 'fa-solid fa-circle-check text-emerald-400';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
