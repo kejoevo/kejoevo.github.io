@@ -43,7 +43,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(203, 213, 225, 0.7);
         }
-        /* 自訂自動縮放與換行防截斷機制 */
         .stat-value {
             font-size: clamp(0.9rem, 1.6vw, 1.5rem);
             line-height: 1.25;
@@ -72,7 +71,6 @@
 </head>
 <body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-100">
 
-    <!-- Header matching Artisan Scope Viewer Style -->
     <header class="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
@@ -82,7 +80,7 @@
                 <div class="truncate">
                     <h1 class="font-bold text-base sm:text-lg text-slate-800 leading-tight tracking-wide flex items-center gap-2 truncate">
                         <span class="truncate">Café VIP Member System</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal hidden sm:inline-block">v2.6 Light Pro</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal hidden sm:inline-block">v0.5 Light Pro</span>
                     </h1>
                     <p class="text-[11px] sm:text-xs text-slate-500 truncate">咖啡店會員儲值與消費管理系統</p>
                 </div>
@@ -138,10 +136,10 @@
         </div>
 
         <!-- Main Responsive Grid: Split Screen -->
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-6 items-stretch">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-6 items-start">
             
-            <!-- Left Side / Top Side: Member List -->
-            <div class="col-span-1 md:col-span-5 flex flex-col glass-panel rounded-2xl shadow-sm overflow-hidden h-[360px] sm:h-[450px] md:h-full">
+            <!-- Left Side: Member List Panel -->
+            <div class="col-span-1 md:col-span-5 flex flex-col glass-panel rounded-2xl shadow-sm overflow-hidden min-h-[250px] md:h-[680px]">
                 <!-- Search & Add Bar -->
                 <div class="p-2.5 sm:p-4 bg-white/50 border-b border-slate-200 flex flex-col sm:flex-row gap-2 justify-between items-center shrink-0">
                     <div class="relative w-full">
@@ -154,15 +152,27 @@
                 </div>
 
                 <!-- Members List Container -->
-                <div class="flex-grow overflow-y-auto custom-scroll" id="member-list">
+                <div class="flex-grow overflow-y-auto custom-scroll flex flex-col justify-start min-h-0" id="member-list">
                     <!-- Members inserted dynamically via JS -->
+                </div>
+
+                <!-- Members List Pagination Controls -->
+                <div id="member-pagination" class="p-2.5 sm:p-3 border-t border-slate-200 bg-white/50 flex justify-between items-center text-xs shrink-0 min-h-[44px]">
+                    <span class="text-[11px] text-slate-500" id="member-page-info">頁次 1 / 1</span>
+                    <div class="flex items-center space-x-1.5">
+                        <button type="button" onclick="changeMemberPage(-1)" id="btn-member-prev-page" class="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-slate-700 transition font-medium cursor-pointer">
+                            <i class="fa-solid fa-chevron-left mr-1"></i>上一頁
+                        </button>
+                        <button type="button" onclick="changeMemberPage(1)" id="btn-member-next-page" class="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-slate-700 transition font-medium cursor-pointer">
+                            下一頁<i class="fa-solid fa-chevron-right ml-1"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Right Side / Bottom Side: Member Details & Transactions -->
-            <div class="col-span-1 md:col-span-7 flex flex-col min-h-0">
+            <div class="col-span-1 md:col-span-7 flex flex-col min-h-0 md:h-[680px]">
                 <!-- No Selection Placeholder -->
-                <div id="no-member-selected" class="glass-panel rounded-2xl shadow-sm p-6 sm:p-12 text-center flex flex-col items-center justify-center h-[360px] sm:h-[450px] md:h-[680px]">
+                <div id="no-member-selected" class="glass-panel rounded-2xl shadow-sm p-6 sm:p-12 text-center flex flex-col items-center justify-center min-h-[250px] md:h-[680px]">
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mb-4 text-2xl sm:text-3xl shadow-sm">
                         <i class="fa-solid fa-address-card"></i>
                     </div>
@@ -171,7 +181,7 @@
                 </div>
 
                 <!-- Selected Member Detail Panel -->
-                <div id="member-detail-panel" class="hidden flex-col h-[360px] sm:h-[450px] md:h-[680px] space-y-3 sm:space-y-4">
+                <div id="member-detail-panel" class="hidden flex-col h-full space-y-3 sm:space-y-4 min-h-0">
                     <!-- Card 1: Info & Balances -->
                     <div class="glass-panel rounded-2xl shadow-sm p-3.5 sm:p-5 relative overflow-hidden shrink-0">
                         <div class="absolute right-0 top-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
@@ -229,16 +239,29 @@
                     </div>
 
                     <!-- Card 2: Transaction History -->
-                    <div class="glass-panel rounded-2xl shadow-sm p-3 sm:p-4 flex-grow flex flex-col overflow-hidden min-h-0">
-                        <div class="flex justify-between items-center mb-2.5">
+                    <div class="glass-panel rounded-2xl shadow-sm p-3 sm:p-4 flex-1 flex flex-col overflow-hidden min-h-0">
+                        <div class="flex justify-between items-center mb-2.5 shrink-0">
                             <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center">
                                 <i class="fa-solid fa-clock-rotate-left text-amber-600 mr-1.5"></i> 交易與消費紀錄
                             </h3>
                             <span class="text-[10px] sm:text-xs text-slate-500" id="history-count">共 0 筆紀錄</span>
                         </div>
 
-                        <div class="flex-grow overflow-y-auto custom-scroll pr-1" id="history-list">
+                        <div class="flex-grow overflow-hidden custom-scroll pr-1 flex flex-col justify-start min-h-0" id="history-list">
                             <!-- History items inserted via JS -->
+                        </div>
+
+                        <!-- History Pagination Controls -->
+                        <div id="history-pagination" class="pt-2 mt-auto border-t border-slate-200 flex justify-between items-center text-xs shrink-0 min-h-[36px]">
+                            <span class="text-[11px] text-slate-500" id="page-info">頁次 1 / 1</span>
+                            <div class="flex items-center space-x-1.5">
+                                <button type="button" onclick="changeHistoryPage(-1)" id="btn-prev-page" class="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-slate-700 transition font-medium cursor-pointer">
+                                    <i class="fa-solid fa-chevron-left mr-1"></i>上一頁
+                                </button>
+                                <button type="button" onclick="changeHistoryPage(1)" id="btn-next-page" class="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-slate-700 transition font-medium cursor-pointer">
+                                    下一頁<i class="fa-solid fa-chevron-right ml-1"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -246,7 +269,6 @@
         </div>
     </main>
 
-    <!-- Modal Modifiers -->
     <!-- Modal: Add / Edit Member -->
     <div id="add-member-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
@@ -320,7 +342,6 @@
                             <i class="fa-solid fa-gear mr-1"></i> 管理標籤
                         </button>
                     </div>
-                    <!-- Dynamic Quick Notes Container -->
                     <div class="grid grid-cols-3 gap-2" id="quick-notes-container">
                         <!-- Loaded dynamically via JS -->
                     </div>
@@ -377,7 +398,6 @@
                             <i class="fa-solid fa-gear mr-1"></i> 管理品項
                         </button>
                     </div>
-                    <!-- Quick Items Buttons Container -->
                     <div class="grid grid-cols-3 gap-2 mb-2" id="quick-items-container">
                         <!-- Loaded dynamically via JS -->
                     </div>
@@ -476,7 +496,6 @@
         <span id="toast-msg" class="text-xs font-medium">提示訊息</span>
     </div>
 
-    <!-- JavaScript Application Logic -->
     <script>
         // Initial Mock Data
         const initialMembers = [
@@ -517,6 +536,12 @@
         let members = [...initialMembers];
         let selectedMemberId = null;
         let pendingVoidHistoryId = null;
+        let currentHistoryPage = 1;
+        const HISTORY_PER_PAGE = 5;
+
+        // Member List Pagination State
+        let currentMemberPage = 1;
+        const MEMBERS_PER_PAGE = 8;
 
         // Quick Deposit Activity Notes Array
         let quickDepositNotes = [
@@ -546,8 +571,9 @@
             renderQuickDepositNotes();
             renderQuickMenuItems();
 
-            // Search Input Event
+            // Search Input Event - reset page when searching
             document.getElementById('search-input').addEventListener('input', (e) => {
+                currentMemberPage = 1;
                 renderMemberList(e.target.value.trim());
             });
         });
@@ -573,6 +599,7 @@
 
         function renderMemberList(filterKeyword = '') {
             const listEl = document.getElementById('member-list');
+            const paginationEl = document.getElementById('member-pagination');
             listEl.innerHTML = '';
 
             const filtered = members.filter(m => 
@@ -581,20 +608,28 @@
 
             if (filtered.length === 0) {
                 listEl.innerHTML = `
-                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm">
+                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm my-auto">
                         <i class="fa-solid fa-user-slash text-2xl mb-2"></i>
                         <p>找不到符合條件的會員</p>
                     </div>
                 `;
+                paginationEl.classList.add('invisible');
                 return;
             }
 
-            filtered.forEach(m => {
+            const totalPages = Math.ceil(filtered.length / MEMBERS_PER_PAGE);
+            if (currentMemberPage > totalPages) currentMemberPage = totalPages;
+            if (currentMemberPage < 1) currentMemberPage = 1;
+
+            const startIndex = (currentMemberPage - 1) * MEMBERS_PER_PAGE;
+            const pageData = filtered.slice(startIndex, startIndex + MEMBERS_PER_PAGE);
+
+            pageData.forEach(m => {
                 const totalBalance = m.realBalance + m.bonusBalance;
                 const isSelected = m.id === selectedMemberId;
 
                 const item = document.createElement('div');
-                item.className = `p-3 sm:p-4 cursor-pointer transition-all border-b border-slate-100 border-l-4 ${
+                item.className = `p-3 sm:p-3.5 cursor-pointer transition-all border-b border-slate-100 border-l-4 shrink-0 flex flex-col justify-center ${
                     isSelected 
                         ? 'bg-amber-50/80 border-l-amber-600 font-medium' 
                         : 'bg-white border-l-transparent hover:bg-amber-50/40'
@@ -605,7 +640,7 @@
                 item.innerHTML = `
                     <div class="flex justify-between items-start">
                         <div>
-                            <div class="font-bold text-slate-800 text-sm sm:text-base">${escapeHtml(m.name)}</div>
+                            <div class="font-bold text-slate-800 text-xs sm:text-sm">${escapeHtml(m.name)}</div>
                             <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${escapeHtml(m.phone)}</div>
                         </div>
                         <div class="text-right">
@@ -616,10 +651,26 @@
                 `;
                 listEl.appendChild(item);
             });
+
+            // Update Member Pagination UI
+            if (totalPages > 1) {
+                paginationEl.classList.remove('invisible');
+                document.getElementById('member-page-info').innerText = `頁次 ${currentMemberPage} / ${totalPages}`;
+                document.getElementById('btn-member-prev-page').disabled = currentMemberPage === 1;
+                document.getElementById('btn-member-next-page').disabled = currentMemberPage === totalPages;
+            } else {
+                paginationEl.classList.add('invisible');
+            }
+        }
+
+        function changeMemberPage(delta) {
+            currentMemberPage += delta;
+            renderMemberList(document.getElementById('search-input').value.trim());
         }
 
         function selectMember(id) {
             selectedMemberId = id;
+            currentHistoryPage = 1;
             renderMemberList(document.getElementById('search-input').value.trim());
 
             const member = members.find(m => m.id === id);
@@ -646,22 +697,31 @@
 
         function renderHistory(historyList) {
             const historyEl = document.getElementById('history-list');
-            document.getElementById('history-count').innerText = `共 ${historyList.length} 筆紀錄`;
+            const paginationEl = document.getElementById('history-pagination');
+            document.getElementById('history-count').innerText = `共 ${historyList ? historyList.length : 0} 筆紀錄`;
             historyEl.innerHTML = '';
 
             if (!historyList || historyList.length === 0) {
                 historyEl.innerHTML = `
-                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm">
+                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm my-auto">
                         <i class="fa-solid fa-receipt text-2xl mb-2"></i>
-                        <p>尚無交易或消費紀錄</p>
+                        <p>尚無交易與消費紀錄</p>
                     </div>
                 `;
+                paginationEl.classList.add('invisible');
                 return;
             }
 
             const sorted = [...historyList].reverse();
+            const totalPages = Math.ceil(sorted.length / HISTORY_PER_PAGE);
 
-            sorted.forEach(h => {
+            if (currentHistoryPage > totalPages) currentHistoryPage = totalPages;
+            if (currentHistoryPage < 1) currentHistoryPage = 1;
+
+            const startIndex = (currentHistoryPage - 1) * HISTORY_PER_PAGE;
+            const pageData = sorted.slice(startIndex, startIndex + HISTORY_PER_PAGE);
+
+            pageData.forEach(h => {
                 const isDeposit = h.type === 'deposit';
                 const isVoided = h.status === 'voided';
                 const item = document.createElement('div');
@@ -705,6 +765,23 @@
                 `;
                 historyEl.appendChild(item);
             });
+
+            if (totalPages > 1) {
+                paginationEl.classList.remove('invisible');
+                document.getElementById('page-info').innerText = `頁次 ${currentHistoryPage} / ${totalPages}`;
+                document.getElementById('btn-prev-page').disabled = currentHistoryPage === 1;
+                document.getElementById('btn-next-page').disabled = currentHistoryPage === totalPages;
+            } else {
+                paginationEl.classList.add('invisible');
+            }
+        }
+
+        function changeHistoryPage(delta) {
+            currentHistoryPage += delta;
+            const member = members.find(m => m.id === selectedMemberId);
+            if (member) {
+                renderHistory(member.history);
+            }
         }
 
         function renderQuickDepositNotes() {
@@ -1097,6 +1174,14 @@
             const gender = document.getElementById('form-gender').value;
             const note = document.getElementById('form-note').value.trim();
 
+            // 檢查電話號碼是否重複（新增時檢查全體，編輯時排除目前會員本身）
+            const isDuplicatePhone = members.some(m => m.phone === phone && m.id !== id);
+            if (isDuplicatePhone) {
+                showToast('該電話號碼已存在！請確認後重新輸入。', 'error');
+                document.getElementById('form-phone').focus();
+                return;
+            }
+
             if (id) {
                 const member = members.find(m => m.id === id);
                 if (member) {
@@ -1122,6 +1207,7 @@
                 };
                 members.unshift(newMember);
                 selectedMemberId = newMember.id;
+                currentMemberPage = 1;
                 showToast('成功新增會員');
             }
 
@@ -1138,7 +1224,7 @@
 
             const realAmount = parseFloat(document.getElementById('deposit-amount').value) || 0;
             const bonusAmount = parseFloat(document.getElementById('deposit-bonus').value) || 0;
-            const note = document.getElementById('deposit-note').value.trim() || '儲值金額';
+            const note = document.getElementById('deposit-note').value.trim() || '會員儲值';
 
             if (realAmount <= 0) {
                 showToast('儲值金額必須大於 0', 'error');
