@@ -1,60 +1,95 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="h-full bg-slate-100 text-slate-800">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>咖啡店會員儲值與消費管理系統</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              coffee: {
+                50: '#fdf8f6',
+                100: '#f2e8e5',
+                200: '#e4d0cb',
+                300: '#d2b2aa',
+                400: '#bd8e82',
+                500: '#a76f62',
+                600: '#8f574a',
+                700: '#754339',
+                800: '#613830',
+                900: '#52302a',
+                950: '#2c1815',
+              }
+            }
+          }
+        }
+      }
+    </script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f8f6f0;
+            font-family: 'Plus Jakarta Sans', 'Noto Sans TC', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(203, 213, 225, 0.7);
         }
         .custom-scroll::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
         .custom-scroll::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.05);
         }
         .custom-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 3px;
         }
         .custom-scroll::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: rgba(0, 0, 0, 0.25);
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="text-slate-800 antialiased min-h-screen flex flex-col bg-slate-100">
 
-    <!-- Header -->
-    <header class="bg-amber-900 text-amber-50 shadow-md">
+    <!-- Header matching Artisan Scope Viewer Style -->
+    <header class="border-b border-slate-200 bg-white/90 backdrop-blur-md sticky top-0 z-40 shadow-sm">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-mug-hot text-2xl text-amber-400"></i>
-                <h1 class="text-lg sm:text-xl font-bold tracking-wide">Café VIP Member System</h1>
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <div class="p-2 bg-amber-600 rounded-xl shadow-md text-white flex-shrink-0">
+                    <i class="fa-solid fa-mug-hot text-lg sm:text-xl"></i>
+                </div>
+                <div class="truncate">
+                    <h1 class="font-bold text-base sm:text-lg text-slate-800 leading-tight tracking-wide flex items-center gap-2 truncate">
+                        <span class="truncate">Café VIP Member System</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal hidden sm:inline-block">v2.6 Light Pro</span>
+                    </h1>
+                    <p class="text-[11px] sm:text-xs text-slate-500 truncate">咖啡店會員儲值與消費管理系統</p>
+                </div>
             </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-xs sm:text-sm bg-amber-800 text-amber-200 px-3 py-1 rounded-full border border-amber-700">
-                    <i class="fa-regular fa-clock mr-1"></i> <span id="current-time">--:--</span>
+            <div class="flex items-center space-x-3">
+                <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl border border-slate-200 font-medium flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-regular fa-clock text-amber-600"></i> <span id="current-time">--:--</span>
                 </span>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 flex-grow w-full">
+    <main class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-6 flex-grow w-full space-y-4 sm:space-y-6">
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-6">
-            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
-                <div class="p-2.5 sm:p-3 bg-amber-100 text-amber-800 rounded-lg">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+            <div class="glass-panel p-3.5 sm:p-4 rounded-2xl shadow-sm flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-amber-100 text-amber-800 rounded-xl">
                     <i class="fa-solid fa-users text-xl sm:text-2xl"></i>
                 </div>
                 <div>
@@ -62,8 +97,8 @@
                     <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-members">0</h3>
                 </div>
             </div>
-            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
-                <div class="p-2.5 sm:p-3 bg-emerald-100 text-emerald-700 rounded-lg">
+            <div class="glass-panel p-3.5 sm:p-4 rounded-2xl shadow-sm flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-emerald-100 text-emerald-700 rounded-xl">
                     <i class="fa-solid fa-wallet text-xl sm:text-2xl"></i>
                 </div>
                 <div>
@@ -71,8 +106,8 @@
                     <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-deposit">$0</h3>
                 </div>
             </div>
-            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
-                <div class="p-2.5 sm:p-3 bg-purple-100 text-purple-700 rounded-lg">
+            <div class="glass-panel p-3.5 sm:p-4 rounded-2xl shadow-sm flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-purple-100 text-purple-700 rounded-xl">
                     <i class="fa-solid fa-gift text-xl sm:text-2xl"></i>
                 </div>
                 <div>
@@ -80,8 +115,8 @@
                     <h3 class="text-lg sm:text-2xl font-bold text-slate-800" id="stat-total-bonus">$0</h3>
                 </div>
             </div>
-            <div class="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-amber-100 flex items-center space-x-3 sm:space-x-4">
-                <div class="p-2.5 sm:p-3 bg-rose-100 text-rose-700 rounded-lg">
+            <div class="glass-panel p-3.5 sm:p-4 rounded-2xl shadow-sm flex items-center space-x-3 sm:space-x-4">
+                <div class="p-2.5 sm:p-3 bg-rose-100 text-rose-700 rounded-xl">
                     <i class="fa-solid fa-receipt text-xl sm:text-2xl"></i>
                 </div>
                 <div>
@@ -91,19 +126,19 @@
             </div>
         </div>
 
-        <!-- Main Responsive Grid: Fold / Mobile Split Screen -->
+        <!-- Main Responsive Grid: Split Screen -->
         <div class="grid grid-cols-12 gap-3 sm:gap-6">
             
             <!-- Left Side: Member List -->
-            <div class="col-span-5 sm:col-span-5 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden h-[620px] sm:h-[680px]">
+            <div class="col-span-5 sm:col-span-5 flex flex-col glass-panel rounded-2xl shadow-sm overflow-hidden h-[620px] sm:h-[680px]">
                 <!-- Search & Add Bar -->
-                <div class="p-2.5 sm:p-4 bg-slate-50 border-b border-slate-200 flex flex-col gap-2 justify-between items-center">
+                <div class="p-2.5 sm:p-4 bg-white/50 border-b border-slate-200 flex flex-col gap-2 justify-between items-center">
                     <div class="relative w-full">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
-                        <input type="text" id="search-input" placeholder="搜尋電話或姓名..." class="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        <input type="text" id="search-input" placeholder="搜尋電話或姓名..." class="w-full pl-8 pr-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
                     </div>
-                    <button onclick="openAddMemberModal()" class="w-full px-2 py-1.5 sm:py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-lg text-xs sm:text-sm font-medium transition flex items-center justify-center whitespace-nowrap shadow-sm cursor-pointer">
-                        <i class="fa-solid fa-user-plus mr-1"></i> 新增會員
+                    <button onclick="openAddMemberModal()" class="w-full px-2 py-1.5 sm:py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-md active:scale-95 flex items-center justify-center whitespace-nowrap cursor-pointer">
+                        <i class="fa-solid fa-user-plus mr-1.5"></i> 新增會員
                     </button>
                 </div>
 
@@ -116,34 +151,34 @@
             <!-- Right Side: Member Details & Transactions -->
             <div class="col-span-7 sm:col-span-7 flex flex-col space-y-4 sm:space-y-6">
                 <!-- No Selection Placeholder -->
-                <div id="no-member-selected" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-12 text-center flex flex-col items-center justify-center h-[620px] sm:h-[680px]">
-                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-amber-50 text-amber-800 rounded-full flex items-center justify-center mb-4 text-2xl sm:text-3xl">
+                <div id="no-member-selected" class="glass-panel rounded-2xl shadow-sm p-6 sm:p-12 text-center flex flex-col items-center justify-center h-[620px] sm:h-[680px]">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mb-4 text-2xl sm:text-3xl shadow-sm">
                         <i class="fa-solid fa-address-card"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-bold text-slate-700 mb-1">尚未選擇會員</h3>
-                    <p class="text-slate-400 text-xs sm:text-sm max-w-sm">請從左側列表中選擇一名會員以檢視詳細資料、進行儲值或扣款消費紀錄。</p>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-1">尚未選擇會員</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm max-w-sm">請從左側列表中選擇一名會員以檢視詳細資料、進行儲值或扣款消費紀錄。</p>
                 </div>
 
                 <!-- Selected Member Detail Panel -->
                 <div id="member-detail-panel" class="hidden flex-col h-[620px] sm:h-[680px] space-y-3 sm:space-y-4">
                     <!-- Card 1: Info & Balances -->
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3.5 sm:p-5 relative overflow-hidden">
-                        <div class="absolute right-0 top-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                    <div class="glass-panel rounded-2xl shadow-sm p-3.5 sm:p-5 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                         
                         <div class="flex justify-between items-start mb-3 sm:mb-4">
                             <div>
                                 <div class="flex items-center space-x-1.5 sm:space-x-2">
                                     <h2 class="text-lg sm:text-2xl font-bold text-slate-800" id="detail-name">---</h2>
-                                    <span class="text-[10px] sm:text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium" id="detail-gender">VIP</span>
+                                    <span class="text-[10px] sm:text-xs bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full font-medium" id="detail-gender">VIP</span>
                                 </div>
                                 <p class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1 text-slate-400"></i><span id="detail-phone">---</span> | 生日: <span id="detail-birthday">--</span></p>
                             </div>
                             <div class="flex items-center space-x-1.5 sm:space-x-2 relative z-10">
-                                <button type="button" onclick="editCurrentMember()" class="p-2 sm:p-3 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-800 rounded-lg transition flex items-center justify-center text-xs sm:text-sm font-medium cursor-pointer shadow-sm border border-slate-200" title="編輯資料">
-                                    <i class="fa-solid fa-pen-to-square sm:mr-1.5 pointer-events-none"></i>
+                                <button type="button" onclick="editCurrentMember()" class="p-2 sm:p-3 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] bg-white hover:bg-slate-50 text-slate-700 rounded-xl transition flex items-center justify-center text-xs sm:text-sm font-medium cursor-pointer shadow-sm border border-slate-300 active:scale-95" title="編輯資料">
+                                    <i class="fa-solid fa-pen-to-square sm:mr-1.5 pointer-events-none text-amber-600"></i>
                                     <span class="hidden sm:inline pointer-events-none">編輯</span>
                                 </button>
-                                <button type="button" onclick="confirmDeleteCurrentMember()" class="p-2 sm:p-3 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-800 rounded-lg transition flex items-center justify-center text-xs sm:text-sm font-medium cursor-pointer shadow-sm border border-rose-200" title="刪除會員">
+                                <button type="button" onclick="confirmDeleteCurrentMember()" class="p-2 sm:p-3 min-w-[36px] sm:min-w-[44px] min-h-[36px] sm:min-h-[44px] bg-white hover:bg-rose-50 text-rose-600 rounded-xl transition flex items-center justify-center text-xs sm:text-sm font-medium cursor-pointer shadow-sm border border-rose-200 active:scale-95" title="刪除會員">
                                     <i class="fa-solid fa-trash-can sm:mr-1.5 pointer-events-none"></i>
                                     <span class="hidden sm:inline pointer-events-none">刪除</span>
                                 </button>
@@ -151,7 +186,7 @@
                         </div>
 
                         <!-- Balances Grid -->
-                        <div class="grid grid-cols-3 gap-2 sm:gap-3 bg-slate-50 p-2.5 sm:p-3.5 rounded-xl border border-slate-100">
+                        <div class="grid grid-cols-3 gap-2 sm:gap-3 bg-slate-50/80 p-2.5 sm:p-3.5 rounded-xl border border-slate-200">
                             <div>
                                 <p class="text-[10px] sm:text-xs text-slate-500 mb-0.5">儲值金本金</p>
                                 <p class="text-base sm:text-xl font-bold text-emerald-600" id="detail-real-balance">$0</p>
@@ -166,29 +201,29 @@
                             </div>
                         </div>
 
-                        <div class="mt-2.5 text-[11px] sm:text-xs text-slate-400 flex justify-between items-center">
-                            <span>累計消費: <strong class="text-slate-600" id="detail-total-spent">$0</strong></span>
-                            <span>備註: <span id="detail-note" class="text-slate-600 font-normal">無</span></span>
+                        <div class="mt-2.5 text-[11px] sm:text-xs text-slate-500 flex justify-between items-center">
+                            <span>累計消費: <strong class="text-slate-700" id="detail-total-spent">$0</strong></span>
+                            <span>備註: <span id="detail-note" class="text-slate-700 font-normal">無</span></span>
                         </div>
 
                         <!-- Quick Action Buttons -->
                         <div class="grid grid-cols-2 gap-2 sm:gap-3 mt-3 sm:mt-4">
-                            <button onclick="openModal('deposit-modal')" class="py-2 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg text-xs sm:text-sm shadow-sm transition flex items-center justify-center cursor-pointer">
+                            <button onclick="openModal('deposit-modal')" class="py-2 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs sm:text-sm shadow-md transition-all active:scale-95 flex items-center justify-center cursor-pointer">
                                 <i class="fa-solid fa-circle-plus mr-1.5"></i> 會員儲值
                             </button>
-                            <button onclick="openModal('spend-modal')" class="py-2 sm:py-2.5 bg-amber-800 hover:bg-amber-900 text-white font-medium rounded-lg text-xs sm:text-sm shadow-sm transition flex items-center justify-center cursor-pointer">
+                            <button onclick="openModal('spend-modal')" class="py-2 sm:py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-xl text-xs sm:text-sm shadow-md transition-all active:scale-95 flex items-center justify-center cursor-pointer">
                                 <i class="fa-solid fa-bag-shopping mr-1.5"></i> 扣款消費
                             </button>
                         </div>
                     </div>
 
                     <!-- Card 2: Transaction History -->
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-3 sm:p-4 flex-grow flex flex-col overflow-hidden">
+                    <div class="glass-panel rounded-2xl shadow-sm p-3 sm:p-4 flex-grow flex flex-col overflow-hidden">
                         <div class="flex justify-between items-center mb-2.5">
-                            <h3 class="font-bold text-slate-700 text-xs sm:text-sm flex items-center">
-                                <i class="fa-solid fa-clock-rotate-left text-amber-700 mr-1.5"></i> 交易與消費紀錄
+                            <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center">
+                                <i class="fa-solid fa-clock-rotate-left text-amber-600 mr-1.5"></i> 交易與消費紀錄
                             </h3>
-                            <span class="text-[10px] sm:text-xs text-slate-400" id="history-count">共 0 筆紀錄</span>
+                            <span class="text-[10px] sm:text-xs text-slate-500" id="history-count">共 0 筆紀錄</span>
                         </div>
 
                         <div class="flex-grow overflow-y-auto custom-scroll pr-1" id="history-list">
@@ -200,27 +235,28 @@
         </div>
     </main>
 
+    <!-- Modal Modifiers -->
     <!-- Modal: Add / Edit Member -->
-    <div id="add-member-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center">
+    <div id="add-member-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-amber-600 text-white px-6 py-4 flex justify-between items-center shadow-sm">
                 <h3 class="font-bold text-lg" id="modal-member-title">新增會員資料</h3>
-                <button onclick="closeModal('add-member-modal')" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal('add-member-modal')" class="text-amber-100 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="member-form" class="p-6 space-y-4" onsubmit="handleSaveMember(event)">
                 <input type="hidden" id="form-member-id">
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">會員姓名 <span class="text-rose-500">*</span></label>
-                    <input type="text" id="form-name" required placeholder="請輸入姓名" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <input type="text" id="form-name" required placeholder="請輸入姓名" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">電話號碼 <span class="text-rose-500">*</span></label>
-                    <input type="tel" id="form-phone" required placeholder="0912345678" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <input type="tel" id="form-phone" required placeholder="0912345678" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">性別 / 稱謂</label>
-                        <select id="form-gender" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <select id="form-gender" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                             <option value="小姐">小姐</option>
                             <option value="先生">先生</option>
                             <option value="VIP">VIP</option>
@@ -228,43 +264,43 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">生日</label>
-                        <input type="date" id="form-birthday" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                        <input type="date" id="form-birthday" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                     </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">喜好 / 備註</label>
-                    <textarea id="form-note" rows="2" placeholder="例如：去冰半糖、喜歡淺焙..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></textarea>
+                    <textarea id="form-note" rows="2" placeholder="例如：去冰半糖、喜歡淺焙..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeModal('add-member-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
-                    <button type="submit" class="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-sm font-medium">儲存會員</button>
+                    <button type="button" onclick="closeModal('add-member-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl text-sm hover:bg-slate-50 transition-all">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">儲存會員</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal: Deposit -->
-    <div id="deposit-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="bg-emerald-700 text-white px-6 py-4 flex justify-between items-center">
+    <div id="deposit-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-emerald-600 text-white px-6 py-4 flex justify-between items-center shadow-sm">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-wallet mr-2"></i>會員儲值</h3>
-                <button onclick="closeModal('deposit-modal')" class="text-emerald-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal('deposit-modal')" class="text-emerald-100 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="deposit-form" class="p-6 space-y-4" onsubmit="handleDeposit(event)">
-                <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-xs text-emerald-800">
+                <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 text-xs text-emerald-800">
                     正在為 <strong id="deposit-member-name" class="text-sm">--</strong> 辦理儲值
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">儲值本金 (元) <span class="text-rose-500">*</span></label>
-                    <input type="number" id="deposit-amount" required min="1" step="1" placeholder="請輸入實收金額" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-lg font-bold text-slate-800">
+                    <input type="number" id="deposit-amount" required min="1" step="1" placeholder="請輸入實收金額" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-lg font-bold text-slate-800">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">額外贈送金額 (元)</label>
-                    <input type="number" id="deposit-bonus" min="0" step="1" value="0" placeholder="活動贈送金額" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-purple-700 font-semibold">
+                    <input type="number" id="deposit-bonus" min="0" step="1" value="0" placeholder="活動贈送金額" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-purple-700 font-semibold">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">儲值備註 / 活動名稱</label>
-                    <input type="text" id="deposit-note" placeholder="例如：新春滿千送百活動" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <input type="text" id="deposit-note" placeholder="例如：新春滿千送百活動" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
@@ -279,24 +315,24 @@
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeModal('deposit-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-sm font-medium">確認儲值</button>
+                    <button type="button" onclick="closeModal('deposit-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl text-sm hover:bg-slate-50 transition-all">取消</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">確認儲值</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal: Quick Deposit Notes Manager -->
-    <div id="quick-notes-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center">
+    <div id="quick-notes-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-slate-800 text-white px-6 py-4 flex justify-between items-center shadow-sm">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-tags mr-2"></i>管理儲值活動標籤</h3>
                 <button onclick="closeModal('quick-notes-modal')" class="text-slate-300 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="p-6 space-y-4">
                 <div class="flex space-x-2">
-                    <input type="text" id="new-quick-note-input" placeholder="輸入新活動名稱..." class="flex-grow px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
-                    <button type="button" onclick="addQuickDepositNote()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-sm font-medium transition cursor-pointer whitespace-nowrap">
+                    <input type="text" id="new-quick-note-input" placeholder="輸入新活動名稱..." class="flex-grow px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <button type="button" onclick="addQuickDepositNote()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-plus mr-1"></i> 新增
                     </button>
                 </div>
@@ -305,28 +341,28 @@
                     <!-- Managed list items rendered via JS -->
                 </div>
                 <div class="flex justify-end pt-2">
-                    <button type="button" onclick="closeModal('quick-notes-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-sm font-medium">完成並返回</button>
+                    <button type="button" onclick="closeModal('quick-notes-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-sm font-medium transition-all">完成並返回</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal: Spend / Deduction -->
-    <div id="spend-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center">
+    <div id="spend-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-amber-600 text-white px-6 py-4 flex justify-between items-center shadow-sm">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-bag-shopping mr-2"></i>會員扣款消費</h3>
-                <button onclick="closeModal('spend-modal')" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal('spend-modal')" class="text-amber-100 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="spend-form" class="p-6 space-y-4" onsubmit="handleSpend(event)">
-                <div class="bg-amber-50 p-3 rounded-lg border border-amber-100 flex justify-between items-center text-xs">
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 flex justify-between items-center text-xs">
                     <span class="text-slate-600">會員：<strong id="spend-member-name" class="text-slate-800 text-sm">--</strong></span>
-                    <span class="text-slate-600">可用總餘額：<strong id="spend-member-balance" class="text-amber-800 text-sm">$0</strong></span>
+                    <span class="text-slate-600">可用總餘額：<strong id="spend-member-balance" class="text-amber-700 text-sm">$0</strong></span>
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-1.5">
                         <label class="block text-xs font-semibold text-slate-600">快速品項點餐 (點擊累加金額)</label>
-                        <button type="button" onclick="openQuickItemsManager()" class="text-xs text-amber-800 hover:text-amber-950 font-medium flex items-center cursor-pointer">
+                        <button type="button" onclick="openQuickItemsManager()" class="text-xs text-amber-700 hover:text-amber-900 font-medium flex items-center cursor-pointer">
                             <i class="fa-solid fa-gear mr-1"></i> 管理品項
                         </button>
                     </div>
@@ -342,39 +378,39 @@
                             <i class="fa-solid fa-circle-exclamation mr-1"></i>餘額不足！
                         </span>
                     </div>
-                    <input type="number" id="spend-amount" required min="1" step="1" placeholder="請輸入金額" oninput="validateSpendAmount()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none text-lg font-bold text-slate-800 transition-colors duration-200">
+                    <input type="number" id="spend-amount" required min="1" step="1" placeholder="請輸入金額" oninput="validateSpendAmount()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none text-lg font-bold text-slate-800 transition-colors duration-200">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">扣款優先順序</label>
-                    <select id="spend-priority" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                    <select id="spend-priority" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
                         <option value="bonus-first">優先扣除「贈送金」 (貼心熱門選項)</option>
                         <option value="real-first">優先扣除「儲值本金」</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-600 mb-1">消費備註 / 明細</label>
-                    <input type="text" id="spend-note" placeholder="例如：內用冰拿鐵 2 杯" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <input type="text" id="spend-note" placeholder="例如：內用冰拿鐵 2 杯" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" onclick="closeModal('spend-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
-                    <button type="submit" id="spend-submit-btn" class="px-4 py-2 bg-amber-800 hover:bg-amber-900 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition">確認扣款</button>
+                    <button type="button" onclick="closeModal('spend-modal')" class="px-4 py-2 border border-slate-300 text-slate-600 rounded-xl text-sm hover:bg-slate-50 transition-all">取消</button>
+                    <button type="submit" id="spend-submit-btn" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">確認扣款</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Modal: Quick Items Manager -->
-    <div id="quick-items-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden">
-            <div class="bg-amber-900 text-white px-6 py-4 flex justify-between items-center">
+    <div id="quick-items-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="bg-amber-600 text-white px-6 py-4 flex justify-between items-center shadow-sm">
                 <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check mr-2"></i>管理點餐快速品項與價格</h3>
-                <button onclick="closeModal('quick-items-modal')" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <button onclick="closeModal('quick-items-modal')" class="text-amber-100 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="p-6 space-y-4">
                 <div class="grid grid-cols-12 gap-2">
-                    <input type="text" id="new-item-name-input" placeholder="品項名稱 (例: 焦糖瑪奇朵)" class="col-span-6 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    <input type="number" id="new-item-price-input" min="1" placeholder="單價 $" class="col-span-3 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                    <button type="button" onclick="addQuickItemSetting()" class="col-span-3 px-3 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-sm font-medium transition cursor-pointer whitespace-nowrap">
+                    <input type="text" id="new-item-name-input" placeholder="品項名稱 (例: 焦糖瑪奇朵)" class="col-span-6 px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <input type="number" id="new-item-price-input" min="1" placeholder="單價 $" class="col-span-3 px-3 py-2 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    <button type="button" onclick="addQuickItemSetting()" class="col-span-3 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95 cursor-pointer whitespace-nowrap">
                         <i class="fa-solid fa-plus mr-1"></i> 新增
                     </button>
                 </div>
@@ -383,16 +419,16 @@
                     <!-- Managed quick menu items rendered via JS -->
                 </div>
                 <div class="flex justify-end pt-2">
-                    <button type="button" onclick="closeModal('quick-items-modal')" class="px-4 py-2 bg-amber-900 hover:bg-amber-950 text-white rounded-lg text-sm font-medium">完成並返回</button>
+                    <button type="button" onclick="closeModal('quick-items-modal')" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">完成並返回</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Modal: Confirmation for Voiding Transaction -->
-    <div id="void-confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden p-6 text-center space-y-4">
-            <div class="w-12 h-12 bg-amber-100 text-amber-800 rounded-full flex items-center justify-center mx-auto text-xl">
+    <div id="void-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden p-6 text-center space-y-4">
+            <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto text-xl shadow-sm">
                 <i class="fa-solid fa-rotate-left"></i>
             </div>
             <h3 class="font-bold text-slate-800 text-lg">確認辦理沖銷 / 退款？</h3>
@@ -400,16 +436,16 @@
                 您確定要作廢此筆紀錄？此動作將會回推帳戶餘額。
             </p>
             <div class="flex space-x-3 pt-2">
-                <button type="button" onclick="closeModal('void-confirm-modal')" class="flex-1 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
-                <button type="button" onclick="executeVoidTransaction()" class="flex-1 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-lg text-sm font-medium">確定作廢</button>
+                <button type="button" onclick="closeModal('void-confirm-modal')" class="flex-1 py-2 border border-slate-300 text-slate-600 rounded-xl text-sm hover:bg-slate-50 transition-all">取消</button>
+                <button type="button" onclick="executeVoidTransaction()" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">確定作廢</button>
             </div>
         </div>
     </div>
 
     <!-- Modal: Confirmation for Deleting Member -->
-    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden p-6 text-center space-y-4">
-            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl">
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full overflow-hidden p-6 text-center space-y-4">
+            <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-xl shadow-sm">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <h3 class="font-bold text-slate-800 text-lg">刪除會員資料</h3>
@@ -417,8 +453,8 @@
                 您確定要刪除會員「<strong id="delete-member-name" class="text-slate-800">--</strong>」嗎？此動作將無法復原。
             </p>
             <div class="flex space-x-3 pt-2">
-                <button type="button" onclick="closeModal('delete-confirm-modal')" class="flex-1 py-2 border border-slate-300 text-slate-600 rounded-lg text-sm hover:bg-slate-50">取消</button>
-                <button type="button" onclick="executeDeleteMember()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-sm font-medium">確定刪除</button>
+                <button type="button" onclick="closeModal('delete-confirm-modal')" class="flex-1 py-2 border border-slate-300 text-slate-600 rounded-xl text-sm hover:bg-slate-50 transition-all">取消</button>
+                <button type="button" onclick="executeDeleteMember()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md active:scale-95">確定刪除</button>
             </div>
         </div>
     </div>
@@ -508,7 +544,7 @@
         function updateTime() {
             const now = new Date();
             document.getElementById('current-time').innerText = now.toLocaleString('zh-TW', {
-                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+                year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
             });
         }
 
@@ -547,10 +583,10 @@
                 const isSelected = m.id === selectedMemberId;
 
                 const item = document.createElement('div');
-                item.className = `p-3 sm:p-4 cursor-pointer transition border-b border-slate-100 border-l-4 ${
+                item.className = `p-3 sm:p-4 cursor-pointer transition-all border-b border-slate-100 border-l-4 ${
                     isSelected 
-                        ? 'bg-amber-50 border-l-amber-700 font-medium' 
-                        : 'bg-white border-l-transparent hover:bg-amber-50/60'
+                        ? 'bg-amber-50/80 border-l-amber-600 font-medium' 
+                        : 'bg-white border-l-transparent hover:bg-amber-50/40'
                 }`;
                 
                 item.onclick = () => selectMember(m.id);
@@ -562,7 +598,7 @@
                             <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${escapeHtml(m.phone)}</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-xs sm:text-sm font-bold text-amber-800">$${totalBalance.toLocaleString()}</div>
+                            <div class="text-xs sm:text-sm font-bold text-amber-700">$${totalBalance.toLocaleString()}</div>
                             <div class="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">本金:$${m.realBalance}</div>
                         </div>
                     </div>
@@ -650,7 +686,7 @@
                             </p>
                         </div>
                         ${!isVoided ? `
-                            <button onclick="confirmVoidTransaction('${h.id}')" class="p-1 text-slate-400 hover:text-amber-800 hover:bg-amber-50 rounded transition text-xs cursor-pointer" title="作廢/沖銷此筆紀錄">
+                            <button onclick="confirmVoidTransaction('${h.id}')" class="p-1 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded transition text-xs cursor-pointer" title="作廢/沖銷此筆紀錄">
                                 <i class="fa-solid fa-rotate-left"></i>
                             </button>
                         ` : ''}
@@ -669,7 +705,7 @@
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.onclick = () => setDepositQuickNote(noteText);
-                btn.className = 'py-1.5 px-2 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 border border-slate-200 rounded text-xs transition truncate cursor-pointer';
+                btn.className = 'py-1.5 px-2 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 border border-slate-200 rounded-xl text-xs transition truncate cursor-pointer';
                 btn.innerText = noteText;
                 btn.title = noteText;
                 container.appendChild(btn);
@@ -693,9 +729,9 @@
 
             quickDepositNotes.forEach((noteText, idx) => {
                 const item = document.createElement('div');
-                item.className = 'flex items-center justify-between bg-white p-2.5 rounded-lg border border-slate-200 text-xs shadow-sm';
+                item.className = 'flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm';
                 item.innerHTML = `
-                    <input type="text" value="${escapeHtml(noteText)}" onchange="updateQuickDepositNote(${idx}, this.value)" class="flex-grow mr-2 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded text-xs focus:outline-none text-slate-700 font-medium">
+                    <input type="text" value="${escapeHtml(noteText)}" onchange="updateQuickDepositNote(${idx}, this.value)" class="flex-grow mr-2 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded-lg text-xs focus:outline-none text-slate-700 font-medium">
                     <button type="button" onclick="removeQuickDepositNote(${idx})" class="text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded transition cursor-pointer" title="刪除標籤">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
@@ -750,7 +786,7 @@
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.onclick = () => addQuickItem(item.name, item.price);
-                btn.className = 'p-2 border border-slate-200 rounded-lg text-xs hover:bg-amber-50 hover:border-amber-300 transition text-slate-700 font-medium truncate cursor-pointer';
+                btn.className = 'p-2 border border-slate-200 rounded-xl text-xs hover:bg-amber-50 hover:border-amber-300 transition text-slate-700 font-medium truncate cursor-pointer';
                 btn.innerText = `${item.name} $${item.price}`;
                 btn.title = `${item.name} $${item.price}`;
                 container.appendChild(btn);
@@ -774,12 +810,12 @@
 
             quickMenuItems.forEach((itemObj, idx) => {
                 const item = document.createElement('div');
-                item.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-lg border border-slate-200 text-xs shadow-sm';
+                item.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm';
                 item.innerHTML = `
-                    <input type="text" value="${escapeHtml(itemObj.name)}" onchange="updateQuickItemName(${idx}, this.value)" class="col-span-6 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded text-xs focus:outline-none text-slate-700 font-medium">
+                    <input type="text" value="${escapeHtml(itemObj.name)}" onchange="updateQuickItemName(${idx}, this.value)" class="col-span-6 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded-lg text-xs focus:outline-none text-slate-700 font-medium">
                     <div class="col-span-4 flex items-center">
                         <span class="text-slate-400 mr-1">$</span>
-                        <input type="number" min="1" value="${itemObj.price}" onchange="updateQuickItemPrice(${idx}, this.value)" class="w-full px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded text-xs focus:outline-none text-slate-700 font-bold">
+                        <input type="number" min="1" value="${itemObj.price}" onchange="updateQuickItemPrice(${idx}, this.value)" class="w-full px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded-lg text-xs focus:outline-none text-slate-700 font-bold">
                     </div>
                     <button type="button" onclick="removeQuickItemSetting(${idx})" class="col-span-2 text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded transition text-center cursor-pointer" title="刪除品項">
                         <i class="fa-solid fa-trash-can"></i>
@@ -871,7 +907,7 @@
 
             const descEl = document.getElementById('void-modal-desc');
             if (record.type === 'deposit') {
-                descEl.innerHTML = `您確定要作廢此筆儲值紀錄？<br><span class="text-amber-800 font-semibold">將扣回本金 $${record.realAmount} 與贈送金 $${record.bonusAmount}</span>。`;
+                descEl.innerHTML = `您確定要作廢此筆儲值紀錄？<br><span class="text-amber-700 font-semibold">將扣回本金 $${record.realAmount} 與贈送金 $${record.bonusAmount}</span>。`;
             } else {
                 descEl.innerHTML = `您確定要退款/作廢此筆消費？<br><span class="text-emerald-700 font-semibold">將歸還本金 $${record.usedReal} 與贈送金 $${record.usedBonus}</span> 到會員帳戶。`;
             }
