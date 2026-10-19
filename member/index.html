@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XI Coffee Roasters Memeber System</title>
+    <title>咖啡店會員儲值與消費管理系統</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -80,14 +80,14 @@
                 <div class="truncate">
                     <h1 class="font-bold text-base sm:text-lg text-slate-800 leading-tight tracking-wide flex items-center gap-2 truncate">
                         <span class="truncate">Café VIP Member System</span>
-                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal hidden sm:inline-block">v0.5 Light Pro</span>
+                        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 font-normal hidden sm:inline-block">v2.6 Light Pro</span>
                     </h1>
                     <p class="text-[11px] sm:text-xs text-slate-500 truncate">咖啡店會員儲值與消費管理系統</p>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
                 <span class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl border border-slate-200 font-medium flex items-center gap-1.5 shadow-sm">
-                    <i class="fa-regular fa-clock text-amber-600"></i> <span id="current-time">--:--</span>
+                    <i class="fa-regular fa-clock text-amber-600"></i> <span id="current-time">----/--/-- --:--</span>
                 </span>
             </div>
         </div>
@@ -139,7 +139,7 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-6 items-start">
             
             <!-- Left Side: Member List Panel -->
-            <div class="col-span-1 md:col-span-5 flex flex-col glass-panel rounded-2xl shadow-sm overflow-hidden min-h-[250px] md:h-[680px]">
+            <div class="col-span-1 md:col-span-5 flex flex-col glass-panel rounded-2xl shadow-sm overflow-hidden min-h-[250px] md:h-[720px]">
                 <!-- Search & Add Bar -->
                 <div class="p-2.5 sm:p-4 bg-white/50 border-b border-slate-200 flex flex-col sm:flex-row gap-2 justify-between items-center shrink-0">
                     <div class="relative w-full">
@@ -170,9 +170,9 @@
                 </div>
             </div>
 
-            <div class="col-span-1 md:col-span-7 flex flex-col min-h-0 md:h-[680px]">
+            <div class="col-span-1 md:col-span-7 flex flex-col min-h-0 md:h-[720px]">
                 <!-- No Selection Placeholder -->
-                <div id="no-member-selected" class="glass-panel rounded-2xl shadow-sm p-6 sm:p-12 text-center flex flex-col items-center justify-center min-h-[250px] md:h-[680px]">
+                <div id="no-member-selected" class="glass-panel rounded-2xl shadow-sm p-6 sm:p-12 text-center flex flex-col items-center justify-center min-h-[250px] md:h-[720px]">
                     <div class="w-16 h-16 sm:w-20 sm:h-20 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mb-4 text-2xl sm:text-3xl shadow-sm">
                         <i class="fa-solid fa-address-card"></i>
                     </div>
@@ -239,7 +239,7 @@
                     </div>
 
                     <!-- Card 2: Transaction History -->
-                    <div class="glass-panel rounded-2xl shadow-sm p-3 sm:p-4 flex-1 flex flex-col overflow-hidden min-h-0">
+                    <div class="glass-panel rounded-2xl shadow-sm p-3.5 sm:p-4 flex-1 flex flex-col overflow-hidden min-h-[420px]">
                         <div class="flex justify-between items-center mb-2.5 shrink-0">
                             <h3 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center">
                                 <i class="fa-solid fa-clock-rotate-left text-amber-600 mr-1.5"></i> 交易與消費紀錄
@@ -247,12 +247,12 @@
                             <span class="text-[10px] sm:text-xs text-slate-500" id="history-count">共 0 筆紀錄</span>
                         </div>
 
-                        <div class="flex-grow overflow-hidden custom-scroll pr-1 flex flex-col justify-start min-h-0" id="history-list">
+                        <div class="flex-grow overflow-hidden flex flex-col justify-start min-h-[300px]" id="history-list">
                             <!-- History items inserted via JS -->
                         </div>
 
                         <!-- History Pagination Controls -->
-                        <div id="history-pagination" class="pt-2 mt-auto border-t border-slate-200 flex justify-between items-center text-xs shrink-0 min-h-[36px]">
+                        <div id="history-pagination" class="pt-2.5 mt-auto border-t border-slate-200 flex justify-between items-center text-xs shrink-0 min-h-[40px]">
                             <span class="text-[11px] text-slate-500" id="page-info">頁次 1 / 1</span>
                             <div class="flex items-center space-x-1.5">
                                 <button type="button" onclick="changeHistoryPage(-1)" id="btn-prev-page" class="px-2.5 py-1 bg-white border border-slate-300 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg text-slate-700 transition font-medium cursor-pointer">
@@ -529,527 +529,323 @@
                     { id: 'h4', type: 'deposit', realAmount: 2000, bonusAmount: 0, note: '一般儲值', time: '2026-02-15 08:30', status: 'valid' },
                     { id: 'h5', type: 'spend', amount: 1600, usedReal: 1600, usedBonus: 0, note: '辦公室外帶咖啡', time: '2026-03-02 09:10', status: 'valid' }
                 ]
+            },
+            {
+                id: 'm3',
+                name: '張怡君',
+                phone: '0955112233',
+                birthday: '1995-08-22',
+                gender: '小姐',
+                note: '偏好淺焙手沖、熱卡布奇諾',
+                realBalance: 2150,
+                bonusBalance: 300,
+                totalSpent: 1050,
+                history: [
+                    { id: 'h6', type: 'deposit', realAmount: 2000, bonusAmount: 300, note: '新春滿千送百活動', time: '2026-03-01 10:00', status: 'valid' },
+                    { id: 'h7', type: 'spend', amount: 150, usedReal: 0, usedBonus: 150, note: '卡布奇諾 1 杯', time: '2026-03-05 15:30', status: 'valid' },
+                    { id: 'h8', type: 'spend', amount: 200, usedReal: 50, usedBonus: 150, note: '手沖特調 + 肉桂捲', time: '2026-03-12 11:10', status: 'valid' },
+                    { id: 'h9', type: 'deposit', realAmount: 1000, bonusAmount: 150, note: '常客儲值回饋', time: '2026-03-18 09:45', status: 'valid' },
+                    { id: 'h10', type: 'spend', amount: 250, usedReal: 250, usedBonus: 0, note: '燕麥奶拿鐵 2 杯', time: '2026-03-22 14:20', status: 'valid' },
+                    { id: 'h11', type: 'spend', amount: 450, usedReal: 450, usedBonus: 0, note: '咖啡豆乙包', time: '2026-03-28 16:50', status: 'valid' }
+                ]
             }
         ];
 
         // State Management
-        let members = [...initialMembers];
+        let members = [];
         let selectedMemberId = null;
-        let pendingVoidHistoryId = null;
+        let pendingVoidTxId = null;
         let currentHistoryPage = 1;
         const HISTORY_PER_PAGE = 5;
 
-        // Member List Pagination State
         let currentMemberPage = 1;
         const MEMBERS_PER_PAGE = 8;
 
-        // Quick Deposit Activity Notes Array
-        let quickDepositNotes = [
-            '新春滿千送百',
-            '週年慶優惠',
-            'VIP 開戶禮',
-            '常客儲值回饋',
-            '當月壽星儲值',
-            '門市快閃活動'
-        ];
-
-        // Quick Order Menu Items Array
+        // Quick Settings Preset Data
+        let quickDepositNotes = ['新春滿千送百', '儲值 $1000 送 $200', ' VIP 週年慶特惠'];
         let quickMenuItems = [
-            { name: '拿鐵咖啡', price: 120 },
             { name: '美式咖啡', price: 90 },
+            { name: '拿鐵咖啡', price: 120 },
             { name: '燕麥奶拿鐵', price: 140 },
-            { name: '手沖特調', price: 160 },
-            { name: '肉桂捲', price: 110 },
-            { name: '咖啡豆乙包', price: 450 }
+            { name: '卡布奇諾', price: 120 },
+            { name: '手沖精品', price: 160 },
+            { name: '招牌肉桂捲', price: 110 }
         ];
 
-        window.addEventListener('DOMContentLoaded', () => {
-            updateTime();
-            setInterval(updateTime, 1000);
-            renderMemberList();
-            updateGlobalStats();
-            renderQuickDepositNotes();
-            renderQuickMenuItems();
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            updateClock();
+            setInterval(updateClock, 10000);
 
-            // Search Input Event - reset page when searching
-            document.getElementById('search-input').addEventListener('input', (e) => {
+            document.getElementById('search-input').addEventListener('input', () => {
                 currentMemberPage = 1;
-                renderMemberList(e.target.value.trim());
+                renderMemberList();
             });
         });
 
-        function updateTime() {
+        // Clock Function
+        function updateClock() {
             const now = new Date();
-            document.getElementById('current-time').innerText = now.toLocaleString('zh-TW', {
-                year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-            });
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            let hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const ampm = hours >= 12 ? '下午' : '上午';
+            
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 代表 12 點
+            
+            document.getElementById('current-time').innerText = `${year}/${month}/${day} ${ampm}${hours}:${minutes}`;
         }
 
-        function updateGlobalStats() {
-            const totalMembers = members.length;
-            const totalDeposit = members.reduce((sum, m) => sum + m.realBalance, 0);
-            const totalBonus = members.reduce((sum, m) => sum + m.bonusBalance, 0);
-            const totalSpent = members.reduce((sum, m) => sum + m.totalSpent, 0);
+        // Data Storage Handlers
+        function loadData() {
+            const savedMembers = localStorage.getItem('cafe_vip_members_v2_6');
+            if (savedMembers) {
+                try {
+                    members = JSON.parse(savedMembers);
+                    if (!Array.isArray(members) || members.length === 0) {
+                        members = JSON.parse(JSON.stringify(initialMembers));
+                    }
+                } catch(e) {
+                    members = JSON.parse(JSON.stringify(initialMembers));
+                }
+            } else {
+                members = JSON.parse(JSON.stringify(initialMembers));
+            }
 
-            document.getElementById('stat-total-members').innerText = totalMembers;
+            const savedNotes = localStorage.getItem('cafe_quick_notes');
+            if (savedNotes) {
+                try { quickDepositNotes = JSON.parse(savedNotes); } catch(e){}
+            }
+
+            const savedItems = localStorage.getItem('cafe_quick_items');
+            if (savedItems) {
+                try { quickMenuItems = JSON.parse(savedItems); } catch(e){}
+            }
+
+            saveData();
+            updateStats();
+            renderMemberList();
+            if (selectedMemberId && members.some(m => m.id === selectedMemberId)) {
+                selectMember(selectedMemberId);
+            } else if (members.length > 0) {
+                selectMember(members[0].id);
+            } else {
+                clearSelection();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('cafe_vip_members_v2_6', JSON.stringify(members));
+            localStorage.setItem('cafe_quick_notes', JSON.stringify(quickDepositNotes));
+            localStorage.setItem('cafe_quick_items', JSON.stringify(quickMenuItems));
+        }
+
+        // Stats Dashboard Calculation
+        function updateStats() {
+            document.getElementById('stat-total-members').innerText = members.length;
+            
+            let totalDeposit = 0;
+            let totalBonus = 0;
+            let totalSpent = 0;
+
+            members.forEach(m => {
+                totalDeposit += m.realBalance || 0;
+                totalBonus += m.bonusBalance || 0;
+                totalSpent += m.totalSpent || 0;
+            });
+
             document.getElementById('stat-total-deposit').innerText = `$${totalDeposit.toLocaleString()}`;
             document.getElementById('stat-total-bonus').innerText = `$${totalBonus.toLocaleString()}`;
             document.getElementById('stat-total-spent').innerText = `$${totalSpent.toLocaleString()}`;
         }
 
-        function renderMemberList(filterKeyword = '') {
+        // Render Left Panel Member List with Pagination
+        function renderMemberList() {
             const listEl = document.getElementById('member-list');
-            const paginationEl = document.getElementById('member-pagination');
-            listEl.innerHTML = '';
-
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            
             const filtered = members.filter(m => 
-                m.name.includes(filterKeyword) || m.phone.includes(filterKeyword)
+                m.name.toLowerCase().includes(query) || m.phone.includes(query)
             );
 
             if (filtered.length === 0) {
                 listEl.innerHTML = `
-                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm my-auto">
+                    <div class="text-center py-10 text-slate-400 text-xs">
                         <i class="fa-solid fa-user-slash text-2xl mb-2"></i>
-                        <p>找不到符合條件的會員</p>
+                        <p>未找到符合條件的會員</p>
                     </div>
                 `;
-                paginationEl.classList.add('invisible');
+                document.getElementById('member-page-info').innerText = '頁次 0 / 0';
+                document.getElementById('btn-member-prev-page').disabled = true;
+                document.getElementById('btn-member-next-page').disabled = true;
                 return;
             }
 
-            const totalPages = Math.ceil(filtered.length / MEMBERS_PER_PAGE);
+            const totalPages = Math.ceil(filtered.length / MEMBERS_PER_PAGE) || 1;
             if (currentMemberPage > totalPages) currentMemberPage = totalPages;
             if (currentMemberPage < 1) currentMemberPage = 1;
 
             const startIndex = (currentMemberPage - 1) * MEMBERS_PER_PAGE;
-            const pageData = filtered.slice(startIndex, startIndex + MEMBERS_PER_PAGE);
+            const paginatedMembers = filtered.slice(startIndex, startIndex + MEMBERS_PER_PAGE);
 
-            pageData.forEach(m => {
-                const totalBalance = m.realBalance + m.bonusBalance;
+            listEl.innerHTML = paginatedMembers.map(m => {
+                const totalBal = m.realBalance + m.bonusBalance;
                 const isSelected = m.id === selectedMemberId;
-
-                const item = document.createElement('div');
-                item.className = `p-3 sm:p-3.5 cursor-pointer transition-all border-b border-slate-100 border-l-4 shrink-0 flex flex-col justify-center ${
-                    isSelected 
-                        ? 'bg-amber-50/80 border-l-amber-600 font-medium' 
-                        : 'bg-white border-l-transparent hover:bg-amber-50/40'
-                }`;
-                
-                item.onclick = () => selectMember(m.id);
-
-                item.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <div class="font-bold text-slate-800 text-xs sm:text-sm">${escapeHtml(m.name)}</div>
-                            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-phone mr-1"></i>${escapeHtml(m.phone)}</div>
+                return `
+                    <div onclick="selectMember('${m.id}')" class="p-3 sm:p-3.5 border-b border-slate-100 hover:bg-amber-50/60 cursor-pointer transition-all duration-150 shrink-0 ${isSelected ? 'bg-amber-50/90 border-l-4 border-l-amber-600 pl-2.5' : 'bg-white/40'}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-bold text-xs sm:text-sm text-slate-800">${escapeHtml(m.name)}</span>
+                                <span class="text-[10px] sm:text-xs text-slate-500 ml-1.5">${escapeHtml(m.gender)}</span>
+                            </div>
+                            <span class="text-xs font-bold ${totalBal > 0 ? 'text-amber-700' : 'text-slate-400'}">$${totalBal.toLocaleString()}</span>
                         </div>
-                        <div class="text-right">
-                            <div class="text-xs sm:text-sm font-bold text-amber-700">$${totalBalance.toLocaleString()}</div>
-                            <div class="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">本金:$${m.realBalance}</div>
+                        <div class="flex justify-between items-center mt-1 text-[11px] text-slate-500">
+                            <span><i class="fa-solid fa-phone text-[10px] mr-1 text-slate-400"></i>${m.phone}</span>
+                            <span class="text-[10px] text-slate-400">本$${m.realBalance} + 贈$${m.bonusBalance}</span>
                         </div>
                     </div>
                 `;
-                listEl.appendChild(item);
-            });
+            }).join('');
 
-            // Update Member Pagination UI
-            if (totalPages > 1) {
-                paginationEl.classList.remove('invisible');
-                document.getElementById('member-page-info').innerText = `頁次 ${currentMemberPage} / ${totalPages}`;
-                document.getElementById('btn-member-prev-page').disabled = currentMemberPage === 1;
-                document.getElementById('btn-member-next-page').disabled = currentMemberPage === totalPages;
-            } else {
-                paginationEl.classList.add('invisible');
-            }
+            document.getElementById('member-page-info').innerText = `頁次 ${currentMemberPage} / ${totalPages}`;
+            document.getElementById('btn-member-prev-page').disabled = (currentMemberPage <= 1);
+            document.getElementById('btn-member-next-page').disabled = (currentMemberPage >= totalPages);
         }
 
         function changeMemberPage(delta) {
             currentMemberPage += delta;
-            renderMemberList(document.getElementById('search-input').value.trim());
+            renderMemberList();
         }
 
+        // Member Selection Logic
         function selectMember(id) {
             selectedMemberId = id;
             currentHistoryPage = 1;
-            renderMemberList(document.getElementById('search-input').value.trim());
-
             const member = members.find(m => m.id === id);
-            if (!member) return;
+            
+            if (!member) {
+                clearSelection();
+                return;
+            }
 
             document.getElementById('no-member-selected').classList.add('hidden');
-            const panel = document.getElementById('member-detail-panel');
-            panel.classList.remove('hidden');
-            panel.classList.add('flex');
+            const detailPanel = document.getElementById('member-detail-panel');
+            detailPanel.classList.remove('hidden');
+            detailPanel.classList.add('flex');
 
             document.getElementById('detail-name').innerText = member.name;
+            document.getElementById('detail-gender').innerText = member.gender;
             document.getElementById('detail-phone').innerText = member.phone;
-            document.getElementById('detail-gender').innerText = member.gender || 'VIP';
             document.getElementById('detail-birthday').innerText = member.birthday || '未設定';
-            document.getElementById('detail-note').innerText = member.note || '無';
-
             document.getElementById('detail-real-balance').innerText = `$${member.realBalance.toLocaleString()}`;
             document.getElementById('detail-bonus-balance').innerText = `$${member.bonusBalance.toLocaleString()}`;
             document.getElementById('detail-total-balance').innerText = `$${(member.realBalance + member.bonusBalance).toLocaleString()}`;
             document.getElementById('detail-total-spent').innerText = `$${member.totalSpent.toLocaleString()}`;
+            document.getElementById('detail-note').innerText = member.note || '無';
 
-            renderHistory(member.history);
+            renderMemberList();
+            renderTransactionHistory(member);
         }
 
-        function renderHistory(historyList) {
-            const historyEl = document.getElementById('history-list');
-            const paginationEl = document.getElementById('history-pagination');
-            document.getElementById('history-count').innerText = `共 ${historyList ? historyList.length : 0} 筆紀錄`;
-            historyEl.innerHTML = '';
+        function clearSelection() {
+            selectedMemberId = null;
+            document.getElementById('no-member-selected').classList.remove('hidden');
+            const detailPanel = document.getElementById('member-detail-panel');
+            detailPanel.classList.add('hidden');
+            detailPanel.classList.remove('flex');
+            renderMemberList();
+        }
 
-            if (!historyList || historyList.length === 0) {
-                historyEl.innerHTML = `
-                    <div class="p-8 text-center text-slate-400 text-xs sm:text-sm my-auto">
-                        <i class="fa-solid fa-receipt text-2xl mb-2"></i>
-                        <p>尚無交易與消費紀錄</p>
+        // Render Member Transaction History List
+        function renderTransactionHistory(member) {
+            const historyListEl = document.getElementById('history-list');
+            const history = member.history || [];
+
+            document.getElementById('history-count').innerText = `共 ${history.length} 筆紀錄`;
+
+            if (history.length === 0) {
+                historyListEl.innerHTML = `
+                    <div class="text-center py-12 text-slate-400 text-xs">
+                        <i class="fa-solid fa-receipt text-3xl mb-2"></i>
+                        <p>尚無任何交易或消費紀錄</p>
                     </div>
                 `;
-                paginationEl.classList.add('invisible');
+                document.getElementById('page-info').innerText = '頁次 0 / 0';
+                document.getElementById('btn-prev-page').disabled = true;
+                document.getElementById('btn-next-page').disabled = true;
                 return;
             }
 
-            const sorted = [...historyList].reverse();
-            const totalPages = Math.ceil(sorted.length / HISTORY_PER_PAGE);
-
+            const totalPages = Math.ceil(history.length / HISTORY_PER_PAGE);
             if (currentHistoryPage > totalPages) currentHistoryPage = totalPages;
             if (currentHistoryPage < 1) currentHistoryPage = 1;
 
             const startIndex = (currentHistoryPage - 1) * HISTORY_PER_PAGE;
-            const pageData = sorted.slice(startIndex, startIndex + HISTORY_PER_PAGE);
+            const paginatedItems = history.slice(startIndex, startIndex + HISTORY_PER_PAGE);
 
-            pageData.forEach(h => {
+            historyListEl.innerHTML = paginatedItems.map(h => {
                 const isDeposit = h.type === 'deposit';
-                const isVoided = h.status === 'voided';
-                const item = document.createElement('div');
-                item.className = `py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-center text-xs sm:text-sm ${isVoided ? 'opacity-50' : ''}`;
+                const isVoid = h.status === 'voided';
+                
+                let typeBadge = isDeposit 
+                    ? `<span class="bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-medium"><i class="fa-solid fa-plus text-[9px] mr-1"></i>儲值</span>`
+                    : `<span class="bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full text-[10px] font-medium"><i class="fa-solid fa-minus text-[9px] mr-1"></i>扣款消費</span>`;
 
-                let amountMarkup = '';
-                if (isDeposit) {
-                    amountMarkup = `<span class="font-bold ${isVoided ? 'text-slate-400 line-through' : 'text-emerald-600'}">+ $${(h.realAmount + h.bonusAmount).toLocaleString()}</span>`;
-                } else {
-                    amountMarkup = `<span class="font-bold ${isVoided ? 'text-slate-400 line-through' : 'text-rose-600'}">- $${h.amount.toLocaleString()}</span>`;
+                if (isVoid) {
+                    typeBadge += ` <span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full text-[10px] font-medium line-through">已作廢</span>`;
                 }
 
-                item.innerHTML = `
-                    <div class="flex items-center space-x-2 sm:space-x-3">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 ${
-                            isVoided ? 'bg-slate-100 text-slate-400' : (isDeposit ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700')
-                        }">
-                            <i class="fa-solid ${isDeposit ? 'fa-wallet' : 'fa-basket-shopping'} text-[10px] sm:text-xs"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <div class="flex items-center space-x-1.5">
-                                <p class="font-medium text-slate-700 truncate ${isVoided ? 'line-through' : ''}">${escapeHtml(h.note || (isDeposit ? '儲值' : '消費扣款'))}</p>
-                                ${isVoided ? '<span class="text-[9px] bg-slate-200 text-slate-600 px-1 py-0.2 rounded font-normal shrink-0">已作廢</span>' : ''}
+                let amountText = '';
+                if (isDeposit) {
+                    amountText = `<span class="font-bold text-emerald-600 text-sm ${isVoid ? 'line-through opacity-50' : ''}">+$${h.realAmount}</span>`;
+                    if (h.bonusAmount > 0) {
+                        amountText += ` <span class="text-xs font-semibold text-purple-600 ${isVoid ? 'line-through opacity-50' : ''}">(送+$${h.bonusAmount})</span>`;
+                    }
+                } else {
+                    amountText = `<span class="font-bold text-amber-700 text-sm ${isVoid ? 'line-through opacity-50' : ''}">-$${h.amount}</span>`;
+                }
+
+                return `
+                    <div class="py-2.5 px-1 border-b border-slate-100 shrink-0 flex justify-between items-center ${isVoid ? 'bg-slate-50/60 opacity-60' : ''}">
+                        <div class="space-y-0.5 min-w-0 pr-2">
+                            <div class="flex items-center space-x-2">
+                                ${typeBadge}
+                                <span class="text-[11px] text-slate-400">${h.time}</span>
                             </div>
-                            <p class="text-[10px] text-slate-400">${h.time}</p>
+                            <p class="text-xs font-medium text-slate-700 truncate">${escapeHtml(h.note || '未填寫備註')}</p>
                         </div>
-                    </div>
-                    <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
-                        <div class="text-right">
-                            ${amountMarkup}
-                            <p class="text-[9px] sm:text-[10px] text-slate-400">
-                                ${isDeposit ? `(本金$${h.realAmount}/贈$${h.bonusAmount})` : `(本金$${h.usedReal}/贈$${h.usedBonus})`}
-                            </p>
+                        <div class="flex items-center space-x-2 shrink-0">
+                            <div class="text-right">
+                                ${amountText}
+                            </div>
+                            ${!isVoid ? `
+                                <button onclick="promptVoidTransaction('${h.id}')" class="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-50 transition" title="作廢/沖銷">
+                                    <i class="fa-solid fa-rotate-left text-xs"></i>
+                                </button>
+                            ` : ''}
                         </div>
-                        ${!isVoided ? `
-                            <button onclick="confirmVoidTransaction('${h.id}')" class="p-1 text-slate-400 hover:text-amber-700 hover:bg-amber-50 rounded transition text-xs cursor-pointer" title="作廢/沖銷此筆紀錄">
-                                <i class="fa-solid fa-rotate-left"></i>
-                            </button>
-                        ` : ''}
                     </div>
                 `;
-                historyEl.appendChild(item);
-            });
+            }).join('');
 
-            if (totalPages > 1) {
-                paginationEl.classList.remove('invisible');
-                document.getElementById('page-info').innerText = `頁次 ${currentHistoryPage} / ${totalPages}`;
-                document.getElementById('btn-prev-page').disabled = currentHistoryPage === 1;
-                document.getElementById('btn-next-page').disabled = currentHistoryPage === totalPages;
-            } else {
-                paginationEl.classList.add('invisible');
-            }
+            document.getElementById('page-info').innerText = `頁次 ${currentHistoryPage} / ${totalPages}`;
+            document.getElementById('btn-prev-page').disabled = (currentHistoryPage <= 1);
+            document.getElementById('btn-next-page').disabled = (currentHistoryPage >= totalPages);
         }
 
         function changeHistoryPage(delta) {
             currentHistoryPage += delta;
             const member = members.find(m => m.id === selectedMemberId);
-            if (member) {
-                renderHistory(member.history);
-            }
+            if (member) renderTransactionHistory(member);
         }
 
-        function renderQuickDepositNotes() {
-            const container = document.getElementById('quick-notes-container');
-            if (!container) return;
-            container.innerHTML = '';
-
-            quickDepositNotes.forEach(noteText => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.onclick = () => setDepositQuickNote(noteText);
-                btn.className = 'py-1.5 px-2 bg-slate-100 hover:bg-emerald-100 hover:text-emerald-800 border border-slate-200 rounded-xl text-xs transition truncate cursor-pointer';
-                btn.innerText = noteText;
-                btn.title = noteText;
-                container.appendChild(btn);
-            });
-        }
-
-        function openQuickNotesManager() {
-            renderManagedNotesList();
-            openModal('quick-notes-modal');
-        }
-
-        function renderManagedNotesList() {
-            const listEl = document.getElementById('managed-notes-list');
-            if (!listEl) return;
-            listEl.innerHTML = '';
-
-            if (quickDepositNotes.length === 0) {
-                listEl.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">目前尚無標籤，請於上方輸入新增。</div>`;
-                return;
-            }
-
-            quickDepositNotes.forEach((noteText, idx) => {
-                const item = document.createElement('div');
-                item.className = 'flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm';
-                item.innerHTML = `
-                    <input type="text" value="${escapeHtml(noteText)}" onchange="updateQuickDepositNote(${idx}, this.value)" class="flex-grow mr-2 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-emerald-500 rounded-lg text-xs focus:outline-none text-slate-700 font-medium">
-                    <button type="button" onclick="removeQuickDepositNote(${idx})" class="text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded transition cursor-pointer" title="刪除標籤">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
-                listEl.appendChild(item);
-            });
-        }
-
-        function addQuickDepositNote() {
-            const input = document.getElementById('new-quick-note-input');
-            const val = input.value.trim();
-            if (!val) {
-                showToast('請輸入活動名稱', 'error');
-                return;
-            }
-            quickDepositNotes.push(val);
-            input.value = '';
-            renderManagedNotesList();
-            renderQuickDepositNotes();
-            showToast('新增標籤成功！');
-        }
-
-        function updateQuickDepositNote(index, newVal) {
-            const val = newVal.trim();
-            if (!val) {
-                removeQuickDepositNote(index);
-                return;
-            }
-            quickDepositNotes[index] = val;
-            renderQuickDepositNotes();
-            showToast('活動標籤已更新');
-        }
-
-        function removeQuickDepositNote(index) {
-            quickDepositNotes.splice(index, 1);
-            renderManagedNotesList();
-            renderQuickDepositNotes();
-            showToast('標籤已移除');
-        }
-
-        function setDepositQuickNote(noteText) {
-            const noteInput = document.getElementById('deposit-note');
-            noteInput.value = noteText;
-        }
-
-        function renderQuickMenuItems() {
-            const container = document.getElementById('quick-items-container');
-            if (!container) return;
-            container.innerHTML = '';
-
-            quickMenuItems.forEach(item => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.onclick = () => addQuickItem(item.name, item.price);
-                btn.className = 'p-2 border border-slate-200 rounded-xl text-xs hover:bg-amber-50 hover:border-amber-300 transition text-slate-700 font-medium truncate cursor-pointer';
-                btn.innerText = `${item.name} $${item.price}`;
-                btn.title = `${item.name} $${item.price}`;
-                container.appendChild(btn);
-            });
-        }
-
-        function openQuickItemsManager() {
-            renderManagedItemsList();
-            openModal('quick-items-modal');
-        }
-
-        function renderManagedItemsList() {
-            const listEl = document.getElementById('managed-items-list');
-            if (!listEl) return;
-            listEl.innerHTML = '';
-
-            if (quickMenuItems.length === 0) {
-                listEl.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">目前尚無品項，請於上方輸入新增。</div>`;
-                return;
-            }
-
-            quickMenuItems.forEach((itemObj, idx) => {
-                const item = document.createElement('div');
-                item.className = 'grid grid-cols-12 gap-2 items-center bg-white p-2.5 rounded-xl border border-slate-200 text-xs shadow-sm';
-                item.innerHTML = `
-                    <input type="text" value="${escapeHtml(itemObj.name)}" onchange="updateQuickItemName(${idx}, this.value)" class="col-span-6 px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded-lg text-xs focus:outline-none text-slate-700 font-medium">
-                    <div class="col-span-4 flex items-center">
-                        <span class="text-slate-400 mr-1">$</span>
-                        <input type="number" min="1" value="${itemObj.price}" onchange="updateQuickItemPrice(${idx}, this.value)" class="w-full px-2 py-1 border border-transparent hover:border-slate-300 focus:border-amber-500 rounded-lg text-xs focus:outline-none text-slate-700 font-bold">
-                    </div>
-                    <button type="button" onclick="removeQuickItemSetting(${idx})" class="col-span-2 text-rose-500 hover:text-rose-700 p-1 hover:bg-rose-50 rounded transition text-center cursor-pointer" title="刪除品項">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                `;
-                listEl.appendChild(item);
-            });
-        }
-
-        function addQuickItemSetting() {
-            const nameInput = document.getElementById('new-item-name-input');
-            const priceInput = document.getElementById('new-item-price-input');
-            const nameVal = nameInput.value.trim();
-            const priceVal = parseFloat(priceInput.value) || 0;
-
-            if (!nameVal) {
-                showToast('請輸入品項名稱', 'error');
-                return;
-            }
-            if (priceVal <= 0) {
-                showToast('請輸入有效的單價金額', 'error');
-                return;
-            }
-
-            quickMenuItems.push({ name: nameVal, price: priceVal });
-            nameInput.value = '';
-            priceInput.value = '';
-            renderManagedItemsList();
-            renderQuickMenuItems();
-            showToast(`已新增品項「${nameVal}」$${priceVal}`);
-        }
-
-        function updateQuickItemName(index, newName) {
-            const val = newName.trim();
-            if (!val) {
-                showToast('品項名稱不可為空', 'error');
-                renderManagedItemsList();
-                return;
-            }
-            quickMenuItems[index].name = val;
-            renderQuickMenuItems();
-            showToast('品項名稱已更新');
-        }
-
-        function updateQuickItemPrice(index, newPrice) {
-            const val = parseFloat(newPrice) || 0;
-            if (val <= 0) {
-                showToast('金額必須大於 0', 'error');
-                renderManagedItemsList();
-                return;
-            }
-            quickMenuItems[index].price = val;
-            renderQuickMenuItems();
-            showToast('品項價格已更新');
-        }
-
-        function removeQuickItemSetting(index) {
-            const removed = quickMenuItems[index];
-            quickMenuItems.splice(index, 1);
-            renderManagedItemsList();
-            renderQuickMenuItems();
-            showToast(`已移除「${removed ? removed.name : '品項'}」`);
-        }
-
-        function addQuickItem(itemName, price) {
-            const amountInput = document.getElementById('spend-amount');
-            const noteInput = document.getElementById('spend-note');
-
-            const currentAmount = parseFloat(amountInput.value) || 0;
-            amountInput.value = currentAmount + price;
-
-            if (noteInput.value) {
-                noteInput.value += `, ${itemName}`;
-            } else {
-                noteInput.value = itemName;
-            }
-
-            validateSpendAmount();
-        }
-
-        function confirmVoidTransaction(historyId) {
-            const member = members.find(m => m.id === selectedMemberId);
-            if (!member) return;
-
-            const record = member.history.find(h => h.id === historyId);
-            if (!record || record.status === 'voided') return;
-
-            pendingVoidHistoryId = historyId;
-
-            const descEl = document.getElementById('void-modal-desc');
-            if (record.type === 'deposit') {
-                descEl.innerHTML = `您確定要作廢此筆儲值紀錄？<br><span class="text-amber-700 font-semibold">將扣回本金 $${record.realAmount} 與贈送金 $${record.bonusAmount}</span>。`;
-            } else {
-                descEl.innerHTML = `您確定要退款/作廢此筆消費？<br><span class="text-emerald-700 font-semibold">將歸還本金 $${record.usedReal} 與贈送金 $${record.usedBonus}</span> 到會員帳戶。`;
-            }
-
-            openModal('void-confirm-modal');
-        }
-
-        function executeVoidTransaction() {
-            if (!selectedMemberId || !pendingVoidHistoryId) return;
-
-            const member = members.find(m => m.id === selectedMemberId);
-            if (!member) return;
-
-            const record = member.history.find(h => h.id === pendingVoidHistoryId);
-            if (!record || record.status === 'voided') return;
-
-            if (record.type === 'deposit') {
-                if (member.realBalance < record.realAmount || member.bonusBalance < record.bonusAmount) {
-                    showToast('作廢失敗：會員帳戶剩餘金額不足以扣回當初儲值金額！', 'error');
-                    closeModal('void-confirm-modal');
-                    return;
-                }
-                member.realBalance -= record.realAmount;
-                member.bonusBalance -= record.bonusAmount;
-            } else if (record.type === 'spend') {
-                member.realBalance += record.usedReal;
-                member.bonusBalance += record.usedBonus;
-                member.totalSpent = Math.max(0, member.totalSpent - record.amount);
-            }
-
-            record.status = 'voided';
-            const now = new Date();
-            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
-
-            member.history.push({
-                id: 'h_' + Date.now(),
-                type: record.type === 'deposit' ? 'spend' : 'deposit',
-                realAmount: record.type === 'deposit' ? 0 : record.usedReal,
-                bonusAmount: record.type === 'deposit' ? 0 : record.usedBonus,
-                amount: record.type === 'deposit' ? (record.realAmount + record.bonusAmount) : record.amount,
-                usedReal: record.type === 'deposit' ? record.realAmount : 0,
-                usedBonus: record.type === 'deposit' ? record.bonusAmount : 0,
-                note: `[作廢沖銷] ${record.note || '原紀錄作廢'}`,
-                time: timeStr,
-                status: 'valid'
-            });
-
-            closeModal('void-confirm-modal');
-            pendingVoidHistoryId = null;
-            selectMember(selectedMemberId);
-            updateGlobalStats();
-            showToast('已成功辦理沖銷與退款！');
-        }
-
+        // Add / Edit Member Handlers
         function openAddMemberModal() {
             document.getElementById('modal-member-title').innerText = '新增會員資料';
             document.getElementById('member-form').reset();
@@ -1057,112 +853,19 @@
             openModal('add-member-modal');
         }
 
-        function openModal(id) {
-            if (id === 'deposit-modal' || id === 'spend-modal') {
-                if (!selectedMemberId) {
-                    showToast('請先選擇一名會員', 'error');
-                    return;
-                }
-                const m = members.find(x => x.id === selectedMemberId);
-                if (id === 'deposit-modal') {
-                    document.getElementById('deposit-member-name').innerText = m.name;
-                    document.getElementById('deposit-amount').value = '';
-                    document.getElementById('deposit-bonus').value = '0';
-                    document.getElementById('deposit-note').value = '';
-                } else if (id === 'spend-modal') {
-                    document.getElementById('spend-member-name').innerText = m.name;
-                    document.getElementById('spend-member-balance').innerText = `$${(m.realBalance + m.bonusBalance).toLocaleString()}`;
-                    document.getElementById('spend-amount').value = '';
-                    document.getElementById('spend-note').value = '';
-                    validateSpendAmount();
-                }
-            }
-
-            const modal = document.getElementById(id);
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
-        }
-
-        function validateSpendAmount() {
+        function editCurrentMember() {
             const member = members.find(m => m.id === selectedMemberId);
             if (!member) return;
 
-            const amountInput = document.getElementById('spend-amount');
-            const warningEl = document.getElementById('spend-balance-warning');
-            const submitBtn = document.getElementById('spend-submit-btn');
-
-            if (!amountInput || !warningEl || !submitBtn) return;
-
-            const totalAvail = member.realBalance + member.bonusBalance;
-            const enteredAmount = parseFloat(amountInput.value) || 0;
-
-            if (enteredAmount > totalAvail) {
-                amountInput.classList.remove('border-slate-300', 'focus:ring-amber-500', 'focus:border-amber-500', 'text-slate-800');
-                amountInput.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-600', 'focus:ring-rose-500', 'focus:border-rose-500');
-                warningEl.classList.remove('hidden');
-                submitBtn.disabled = true;
-            } else {
-                amountInput.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-600', 'focus:ring-rose-500', 'focus:border-rose-500');
-                amountInput.classList.add('border-slate-300', 'text-slate-800', 'focus:ring-amber-500', 'focus:border-amber-500');
-                warningEl.classList.add('hidden');
-                submitBtn.disabled = false;
-            }
-        }
-
-        function editCurrentMember() {
-            if (!selectedMemberId) {
-                showToast('請先選擇要修改的會員', 'error');
-                return;
-            }
-            const m = members.find(x => x.id === selectedMemberId);
-            if (!m) return;
-
             document.getElementById('modal-member-title').innerText = '編輯會員資料';
-            document.getElementById('form-member-id').value = m.id;
-            document.getElementById('form-name').value = m.name;
-            document.getElementById('form-phone').value = m.phone;
-            document.getElementById('form-birthday').value = m.birthday || '';
-            document.getElementById('form-gender').value = m.gender || 'VIP';
-            document.getElementById('form-note').value = m.note || '';
+            document.getElementById('form-member-id').value = member.id;
+            document.getElementById('form-name').value = member.name;
+            document.getElementById('form-phone').value = member.phone;
+            document.getElementById('form-gender').value = member.gender;
+            document.getElementById('form-birthday').value = member.birthday || '';
+            document.getElementById('form-note').value = member.note || '';
 
             openModal('add-member-modal');
-        }
-
-        function confirmDeleteCurrentMember() {
-            if (!selectedMemberId) {
-                showToast('請先選擇要刪除的會員', 'error');
-                return;
-            }
-            const m = members.find(x => x.id === selectedMemberId);
-            if (!m) return;
-
-            document.getElementById('delete-member-name').innerText = m.name;
-            openModal('delete-confirm-modal');
-        }
-
-        function executeDeleteMember() {
-            if (!selectedMemberId) return;
-
-            const m = members.find(x => x.id === selectedMemberId);
-            const memberName = m ? m.name : '';
-
-            members = members.filter(x => x.id !== selectedMemberId);
-            selectedMemberId = null;
-
-            document.getElementById('member-detail-panel').classList.add('hidden');
-            document.getElementById('member-detail-panel').classList.remove('flex');
-            document.getElementById('no-member-selected').classList.remove('hidden');
-
-            closeModal('delete-confirm-modal');
-            renderMemberList();
-            updateGlobalStats();
-            showToast(`已成功刪除會員「${memberName}」`);
         }
 
         function handleSaveMember(e) {
@@ -1170,35 +873,38 @@
             const id = document.getElementById('form-member-id').value;
             const name = document.getElementById('form-name').value.trim();
             const phone = document.getElementById('form-phone').value.trim();
-            const birthday = document.getElementById('form-birthday').value;
             const gender = document.getElementById('form-gender').value;
+            const birthday = document.getElementById('form-birthday').value;
             const note = document.getElementById('form-note').value.trim();
 
-            // 檢查電話號碼是否重複（新增時檢查全體，編輯時排除目前會員本身）
-            const isDuplicatePhone = members.some(m => m.phone === phone && m.id !== id);
-            if (isDuplicatePhone) {
-                showToast('該電話號碼已存在！請確認後重新輸入。', 'error');
+            if (!name || !phone) return;
+
+            const existingPhoneMember = members.find(m => m.phone === phone && m.id !== id);
+            if (existingPhoneMember) {
+                showToast(`電話號碼 ${phone} 已由會員「${existingPhoneMember.name}」使用！`, 'error');
                 document.getElementById('form-phone').focus();
                 return;
             }
 
             if (id) {
+                // Edit
                 const member = members.find(m => m.id === id);
                 if (member) {
                     member.name = name;
                     member.phone = phone;
-                    member.birthday = birthday;
                     member.gender = gender;
+                    member.birthday = birthday;
                     member.note = note;
-                    showToast('會員資料已成功更新');
+                    showToast('會員資料更新成功！');
                 }
             } else {
+                // New
                 const newMember = {
                     id: 'm_' + Date.now(),
                     name,
                     phone,
-                    birthday,
                     gender,
+                    birthday,
                     note,
                     realBalance: 0,
                     bonusBalance: 0,
@@ -1208,49 +914,154 @@
                 members.unshift(newMember);
                 selectedMemberId = newMember.id;
                 currentMemberPage = 1;
-                showToast('成功新增會員');
+                showToast('已新增會員！');
             }
 
+            saveData();
+            updateStats();
             closeModal('add-member-modal');
-            renderMemberList();
-            updateGlobalStats();
             if (selectedMemberId) selectMember(selectedMemberId);
         }
 
+        function confirmDeleteCurrentMember() {
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+            document.getElementById('delete-member-name').innerText = member.name;
+            openModal('delete-confirm-modal');
+        }
+
+        function executeDeleteMember() {
+            if (!selectedMemberId) return;
+            members = members.filter(m => m.id !== selectedMemberId);
+            saveData();
+            updateStats();
+            closeModal('delete-confirm-modal');
+            showToast('已成功刪除會員資料');
+            
+            if (members.length > 0) {
+                selectMember(members[0].id);
+            } else {
+                clearSelection();
+            }
+        }
+
+        // Deposit Processing Logic
         function handleDeposit(e) {
             e.preventDefault();
             const member = members.find(m => m.id === selectedMemberId);
             if (!member) return;
 
-            const realAmount = parseFloat(document.getElementById('deposit-amount').value) || 0;
-            const bonusAmount = parseFloat(document.getElementById('deposit-bonus').value) || 0;
+            const realAmt = parseInt(document.getElementById('deposit-amount').value) || 0;
+            const bonusAmt = parseInt(document.getElementById('deposit-bonus').value) || 0;
             const note = document.getElementById('deposit-note').value.trim() || '會員儲值';
 
-            if (realAmount <= 0) {
-                showToast('儲值金額必須大於 0', 'error');
+            if (realAmt <= 0) return;
+
+            member.realBalance += realAmt;
+            member.bonusBalance += bonusAmt;
+
+            const tx = {
+                id: 'tx_' + Date.now(),
+                type: 'deposit',
+                realAmount: realAmt,
+                bonusAmount: bonusAmt,
+                note: note,
+                time: formatDate(new Date()),
+                status: 'valid'
+            };
+
+            member.history = member.history || [];
+            member.history.unshift(tx);
+
+            saveData();
+            updateStats();
+            closeModal('deposit-modal');
+            selectMember(member.id);
+            showToast(`成功儲值本金 $${realAmt}` + (bonusAmt > 0 ? ` (贈送 $${bonusAmt})` : ''));
+        }
+
+        function renderQuickNotes() {
+            const container = document.getElementById('quick-notes-container');
+            container.innerHTML = quickDepositNotes.map(n => `
+                <button type="button" onclick="setDepositNote('${escapeHtml(n)}')" class="px-2 py-1.5 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 border border-slate-200 rounded-lg text-xs truncate transition">
+                    ${escapeHtml(n)}
+                </button>
+            `).join('');
+        }
+
+        function setDepositNote(val) {
+            document.getElementById('deposit-note').value = val;
+        }
+
+        // Quick Deposit Notes Manager Modal Logic
+        function openQuickNotesManager() {
+            renderManagedNotesList();
+            openModal('quick-notes-modal');
+        }
+
+        function renderManagedNotesList() {
+            const container = document.getElementById('managed-notes-list');
+            if (quickDepositNotes.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">尚無活動標籤</p>`;
                 return;
             }
+            container.innerHTML = quickDepositNotes.map((note, index) => `
+                <div class="flex items-center space-x-2 bg-white p-2 rounded-lg border border-slate-200">
+                    <input type="text" value="${escapeHtml(note)}" onchange="updateQuickDepositNote(${index}, this.value)" class="flex-grow text-xs px-2 py-1 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-emerald-500">
+                    <button type="button" onclick="removeQuickDepositNote(${index})" class="text-rose-500 hover:text-rose-700 p-1 rounded hover:bg-rose-50 transition">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
 
-            member.realBalance += realAmount;
-            member.bonusBalance += bonusAmount;
+        function addQuickDepositNote() {
+            const input = document.getElementById('new-quick-note-input');
+            const val = input.value.trim();
+            if (!val) return;
+            quickDepositNotes.push(val);
+            input.value = '';
+            saveData();
+            renderManagedNotesList();
+            renderQuickNotes();
+        }
 
-            const now = new Date();
-            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
+        function updateQuickDepositNote(index, val) {
+            const trimmed = val.trim();
+            if (trimmed) {
+                quickDepositNotes[index] = trimmed;
+                saveData();
+                renderQuickNotes();
+            }
+        }
 
-            member.history.push({
-                id: 'h_' + Date.now(),
-                type: 'deposit',
-                realAmount,
-                bonusAmount,
-                note,
-                time: timeStr,
-                status: 'valid'
-            });
+        function removeQuickDepositNote(index) {
+            quickDepositNotes.splice(index, 1);
+            saveData();
+            renderManagedNotesList();
+            renderQuickNotes();
+        }
 
-            closeModal('deposit-modal');
-            selectMember(selectedMemberId);
-            updateGlobalStats();
-            showToast(`成功儲值 $${realAmount + bonusAmount}`);
+        // Spend / Deduction Processing Logic
+        function validateSpendAmount() {
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const input = document.getElementById('spend-amount');
+            const warning = document.getElementById('spend-balance-warning');
+            const submitBtn = document.getElementById('spend-submit-btn');
+            const val = parseInt(input.value) || 0;
+            const totalBal = member.realBalance + member.bonusBalance;
+
+            if (val > totalBal) {
+                warning.classList.remove('hidden');
+                input.classList.add('border-rose-500', 'text-rose-600');
+                submitBtn.disabled = true;
+            } else {
+                warning.classList.add('hidden');
+                input.classList.remove('border-rose-500', 'text-rose-600');
+                submitBtn.disabled = false;
+            }
         }
 
         function handleSpend(e) {
@@ -1258,19 +1069,13 @@
             const member = members.find(m => m.id === selectedMemberId);
             if (!member) return;
 
-            const amount = parseFloat(document.getElementById('spend-amount').value) || 0;
+            const spendAmt = parseInt(document.getElementById('spend-amount').value) || 0;
             const priority = document.getElementById('spend-priority').value;
-            const note = document.getElementById('spend-note').value.trim() || '咖啡門市消費';
+            const note = document.getElementById('spend-note').value.trim() || '門市消費';
+            const totalBal = member.realBalance + member.bonusBalance;
 
-            const totalAvail = member.realBalance + member.bonusBalance;
-
-            if (amount <= 0) {
-                showToast('消費金額必須大於 0', 'error');
-                return;
-            }
-
-            if (amount > totalAvail) {
-                showToast(`餘額不足！當前總餘額為 $${totalAvail}`, 'error');
+            if (spendAmt <= 0 || spendAmt > totalBal) {
+                showToast('金額不合法或餘額不足', 'error');
                 return;
             }
 
@@ -1278,61 +1083,206 @@
             let usedBonus = 0;
 
             if (priority === 'bonus-first') {
-                if (member.bonusBalance >= amount) {
-                    usedBonus = amount;
-                    member.bonusBalance -= amount;
+                if (member.bonusBalance >= spendAmt) {
+                    usedBonus = spendAmt;
                 } else {
                     usedBonus = member.bonusBalance;
-                    const remaining = amount - usedBonus;
-                    member.bonusBalance = 0;
-                    member.realBalance -= remaining;
-                    usedReal = remaining;
+                    usedReal = spendAmt - usedBonus;
                 }
-            } else {
-                if (member.realBalance >= amount) {
-                    usedReal = amount;
-                    member.realBalance -= amount;
+            } else { // real-first
+                if (member.realBalance >= spendAmt) {
+                    usedReal = spendAmt;
                 } else {
                     usedReal = member.realBalance;
-                    const remaining = amount - usedReal;
-                    member.realBalance = 0;
-                    member.bonusBalance -= remaining;
-                    usedBonus = remaining;
+                    usedBonus = spendAmt - usedReal;
                 }
             }
 
-            member.totalSpent += amount;
+            member.realBalance -= usedReal;
+            member.bonusBalance -= usedBonus;
+            member.totalSpent += spendAmt;
 
-            const now = new Date();
-            const timeStr = now.toISOString().slice(0, 10) + ' ' + now.toTimeString().slice(0, 5);
-
-            member.history.push({
-                id: 'h_' + Date.now(),
+            const tx = {
+                id: 'tx_' + Date.now(),
                 type: 'spend',
-                amount,
-                usedReal,
-                usedBonus,
-                note,
-                time: timeStr,
+                amount: spendAmt,
+                usedReal: usedReal,
+                usedBonus: usedBonus,
+                note: note,
+                time: formatDate(new Date()),
                 status: 'valid'
-            });
+            };
 
+            member.history = member.history || [];
+            member.history.unshift(tx);
+
+            saveData();
+            updateStats();
             closeModal('spend-modal');
-            selectMember(selectedMemberId);
-            updateGlobalStats();
-            showToast(`扣款成功 $${amount}`);
+            selectMember(member.id);
+            showToast(`成功扣款 $${spendAmt}` + (usedBonus > 0 ? ` (包含贈送金 $${usedBonus})` : ''));
         }
 
+        function renderQuickItems() {
+            const container = document.getElementById('quick-items-container');
+            container.innerHTML = quickMenuItems.map(item => `
+                <button type="button" onclick="addSpendQuickItem(${item.price}, '${escapeHtml(item.name)}')" class="p-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-800 border border-slate-200 rounded-xl text-left transition flex justify-between items-center text-xs">
+                    <span class="font-medium truncate">${escapeHtml(item.name)}</span>
+                    <span class="font-bold text-amber-700 ml-1">$${item.price}</span>
+                </button>
+            `).join('');
+        }
+
+        function addSpendQuickItem(price, name) {
+            const input = document.getElementById('spend-amount');
+            const noteInput = document.getElementById('spend-note');
+            const curVal = parseInt(input.value) || 0;
+            input.value = curVal + price;
+
+            if (noteInput.value.trim() === '') {
+                noteInput.value = name;
+            } else if (!noteInput.value.includes(name)) {
+                noteInput.value += ` + ${name}`;
+            }
+
+            validateSpendAmount();
+        }
+
+        // Quick Menu Items Manager Modal Logic
+        function openQuickItemsManager() {
+            renderManagedItemsList();
+            openModal('quick-items-modal');
+        }
+
+        function renderManagedItemsList() {
+            const container = document.getElementById('managed-items-list');
+            if (quickMenuItems.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 py-2 text-center">尚無品項標籤</p>`;
+                return;
+            }
+            container.innerHTML = quickMenuItems.map((item, index) => `
+                <div class="grid grid-cols-12 gap-2 bg-white p-2 rounded-lg border border-slate-200 items-center">
+                    <input type="text" value="${escapeHtml(item.name)}" onchange="updateQuickItemSetting(${index}, 'name', this.value)" class="col-span-6 text-xs px-2 py-1 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-500">
+                    <input type="number" value="${item.price}" min="1" onchange="updateQuickItemSetting(${index}, 'price', this.value)" class="col-span-4 text-xs px-2 py-1 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 font-bold text-slate-700">
+                    <button type="button" onclick="removeQuickItemSetting(${index})" class="col-span-2 text-rose-500 hover:text-rose-700 p-1 rounded hover:bg-rose-50 transition text-center">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addQuickItemSetting() {
+            const nameInput = document.getElementById('new-item-name-input');
+            const priceInput = document.getElementById('new-item-price-input');
+            const name = nameInput.value.trim();
+            const price = parseInt(priceInput.value) || 0;
+
+            if (!name || price <= 0) return;
+
+            quickMenuItems.push({ name, price });
+            nameInput.value = '';
+            priceInput.value = '';
+
+            saveData();
+            renderManagedItemsList();
+            renderQuickItems();
+        }
+
+        function updateQuickItemSetting(index, key, val) {
+            if (key === 'name') {
+                const trimmed = val.trim();
+                if (trimmed) quickMenuItems[index].name = trimmed;
+            } else if (key === 'price') {
+                const num = parseInt(val) || 0;
+                if (num > 0) quickMenuItems[index].price = num;
+            }
+            saveData();
+            renderQuickItems();
+        }
+
+        function removeQuickItemSetting(index) {
+            quickMenuItems.splice(index, 1);
+            saveData();
+            renderManagedItemsList();
+            renderQuickItems();
+        }
+
+        // Void / Revert Transaction Logic
+        function promptVoidTransaction(txId) {
+            pendingVoidTxId = txId;
+            openModal('void-confirm-modal');
+        }
+
+        function executeVoidTransaction() {
+            if (!pendingVoidTxId || !selectedMemberId) return;
+
+            const member = members.find(m => m.id === selectedMemberId);
+            if (!member) return;
+
+            const tx = member.history.find(h => h.id === pendingVoidTxId);
+            if (!tx || tx.status === 'voided') return;
+
+            if (tx.type === 'deposit') {
+                member.realBalance -= tx.realAmount;
+                member.bonusBalance -= tx.bonusAmount;
+            } else if (tx.type === 'spend') {
+                member.realBalance += tx.usedReal;
+                member.bonusBalance += tx.usedBonus;
+                member.totalSpent -= tx.amount;
+            }
+
+            tx.status = 'voided';
+            saveData();
+            updateStats();
+            closeModal('void-confirm-modal');
+            selectMember(member.id);
+            showToast('紀錄已作廢，餘額已補回！');
+            pendingVoidTxId = null;
+        }
+
+        // Modal Utility Helpers
+        function openModal(id) {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (id === 'deposit-modal') {
+                const member = members.find(m => m.id === selectedMemberId);
+                if (member) document.getElementById('deposit-member-name').innerText = member.name;
+                document.getElementById('deposit-form').reset();
+                renderQuickNotes();
+            } else if (id === 'spend-modal') {
+                const member = members.find(m => m.id === selectedMemberId);
+                if (member) {
+                    document.getElementById('spend-member-name').innerText = member.name;
+                    document.getElementById('spend-member-balance').innerText = `$${(member.realBalance + member.bonusBalance).toLocaleString()}`;
+                }
+                document.getElementById('spend-form').reset();
+                validateSpendAmount();
+                renderQuickItems();
+            }
+        }
+
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // Toast Helper
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
-            const icon = document.getElementById('toast-icon');
-            const msgEl = document.getElementById('toast-msg');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
 
-            msgEl.innerText = msg;
+            toastMsg.innerText = msg;
             if (type === 'error') {
-                icon.className = 'fa-solid fa-circle-exclamation text-rose-400';
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-rose-400';
             } else {
-                icon.className = 'fa-solid fa-circle-check text-emerald-400';
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400';
             }
 
             toast.classList.remove('translate-y-20', 'opacity-0');
@@ -1344,12 +1294,27 @@
             }, 3000);
         }
 
+        // Date Format Helper
+        function formatDate(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}`;
+        }
+
+        // Security Utility Helper
         function escapeHtml(str) {
-            return (str || '').replace(/&/g, "&amp;")
-                      .replace(/</g, "&lt;")
-                      .replace(/>/g, "&gt;")
-                      .replace(/"/g, "&quot;")
-                      .replace(/'/g, "&#039;");
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
         }
     </script>
 </body>
